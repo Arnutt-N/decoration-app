@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การตรวจสอบข้อมูลเครื่องราชอิสริยาภรณ์</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Air Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/air-datepicker/3.3.1/css/datepicker.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container my-4">
+        <!-- Header -->
+        <h2 class="text-center mb-4">
+            <i class="fas fa-check-circle icon"></i>
+            การตรวจสอบข้อมูลเครื่องราชอิสริยาภรณ์
+        </h2>
+        <!-- Form -->
+        <form id="decorationForm">
+            <!-- Dropdown ประเภทบุคลากร -->
+            <div class="form-group mb-3">
+                <label for="personal_type">ประเภทบุคลากร</label>
+                <select id="personal_type" name="ประเภทบุคลากร" class="form-control">
+                    <option value="">เลือกประเภทบุคลากร</option>
+                </select>
+            </div>
+            <!-- Dropdown ประเภทตำแหน่ง -->
+            <div class="form-group mb-3">
+                <label for="pos_type">ประเภทตำแหน่ง</label>
+                <select id="pos_type" name="ประเภทตำแหน่ง" class="form-control">
+                    <option value="">เลือกประเภทตำแหน่ง</option>
+                </select>
+            </div>
+            <!-- Dropdown ระดับตำแหน่ง -->
+            <div class="form-group mb-3">
+                <label for="pos_lev">ระดับตำแหน่ง</label>
+                <select id="pos_lev" name="ระดับตำแหน่ง" class="form-control">
+                    <option value="">เลือกระดับตำแหน่ง</option>
+                </select>
+            </div>
+            <!-- Datepicker: วันที่บรรจุ -->
+            <div class="form-group mb-3">
+                <label for="beg_pos_date">วันที่บรรจุ</label>
+                <div class="input-group">
+                    <input type="text" id="beg_pos_date" name="beg_pos_date" class="datepicker form-control"
+                        placeholder="วัน/เดือน/ปี" autocomplete="off">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_beg_pos_date">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Datepicker: วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน -->
+            <div class="form-group mb-3">
+                <label for="pos_lev_date">วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน</label>
+                <div class="input-group">
+                    <input type="text" id="pos_lev_date" name="pos_lev_date" class="datepicker form-control"
+                        placeholder="วัน/เดือน/ปี" autocomplete="off">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_pos_lev_date">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- เงินเดือนปัจจุบัน -->
+            <div class="form-group mb-3">
+                <label for="salary">เงินเดือนปัจจุบัน</label>
+                <input type="number" id="salary" name="salary" class="form-control">
+            </div>
+            <!-- เงินเดือน 5 ปี ย้อนหลัง -->
+            <div class="form-group mb-3">
+                <label for="salary5y">เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span></label>
+                <input type="number" id="salary5y" name="salary5y" class="form-control">
+            </div>
+            <!-- เงินประจำตำแหน่ง -->
+            <div class="form-group mb-3">
+                <label for="pos_amt">เงินประจำตำแหน่ง</label>
+                <input type="number" id="pos_amt" name="pos_amt" class="form-control">
+            </div>
+            <!-- Dropdown เครื่องราชชั้นล่าสุด -->
+            <div class="form-group mb-3">
+                <label for="last_ins_code">เครื่องราชชั้นล่าสุด</label>
+                <select id="last_ins_code" name="เครื่องราชชั้นล่าสุด" class="form-control">
+                    <option value="">เลือกเครื่องราชชั้นล่าสุด (ถ้ามี)</option>
+                </select>
+            </div>
+            <!-- Datepicker: วันที่ได้รับเครื่องราชชั้นล่าสุด -->
+            <div class="form-group mb-3">
+                <label for="last_ins_date">วันที่ได้รับเครื่องราชชั้นล่าสุด</label>
+                <div class="input-group">
+                    <input type="text" id="last_ins_date" name="last_ins_date" class="datepicker form-control"
+                        placeholder="วัน/เดือน/ปี" autocomplete="off">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_last_ins_date">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- ปุ่มส่งและล้างข้อมูล -->
+            <div class="form-group d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary mx-2">ตรวจสอบเครื่องราชชั้นที่เสนอขอ</button>
+                <button type="reset" class="btn btn-danger mx-2" id="btnClearForm">ล้างข้อมูล</button>
+            </div>
+        </form>
+        <!-- ผลลัพธ์ -->
+        <div id="result" class="mt-3 text-center"></div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (หากจำเป็นสำหรับการตั้งค่าเพิ่มเติม) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Air Datepicker JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/air-datepicker/3.3.1/js/datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/air-datepicker/3.3.1/js/i18n/datepicker.th.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>
