@@ -1,7 +1,7 @@
 /* Import Google Font "Prompt" */
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
-/* Global Reset */
+/* Reset */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -15,7 +15,6 @@ body {
   padding: 0;
 }
 
-/* Container */
 .container {
   max-width: 800px;
   margin: 2rem auto;
@@ -46,28 +45,30 @@ label {
 
 /* Input Field Styling */
 .form-control {
-  box-sizing: border-box;
   font-size: 1rem;
   line-height: 1.5;
   padding: 0.75rem 1rem;
   min-height: 3rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ปรับแต่งปุ่มในฟอร์มให้มีความโดดเด่นและ spacing ที่เหมาะสม */
-.form-group.d-flex.justify-content-center button {
-  min-width: 200px; /* กำหนดความกว้างขั้นต่ำให้ปุ่ม */
-  margin: 0 1rem;   /* ปรับระยะห่างเพิ่มเติม */
-  border-radius: 8px;
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
 }
 
 /* Input Group สำหรับ Date Picker */
 .input-group {
   display: flex;
 }
+
 .input-group .form-control {
   flex: 1;
   border-right: 0;
 }
+
 .input-group button {
   border: 1px solid #ccc;
   border-left: 0;
@@ -78,6 +79,7 @@ label {
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 .input-group button:hover {
   background-color: #0d6efd;
   color: #ffffff;
@@ -93,9 +95,11 @@ label {
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
+
 .btn-primary:hover {
   background-color: #0b5ed7;
 }
+
 .btn-danger {
   background-color: #dc3545;
   border: none;
@@ -105,32 +109,49 @@ label {
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
+
 .btn-danger:hover {
   background-color: #bb2d3b;
 }
 
-/* Result Text */
+/* ปุ่มในกลุ่มปุ่ม (Center and Spacing) */
+.form-group.d-flex.justify-content-center button {
+  min-width: 200px;
+  margin: 0 1rem;
+  border-radius: 8px;
+}
+
+/* Responsive Button Adjustment สำหรับมือถือ */
+@media (max-width: 576px) {
+  .form-group.d-flex.justify-content-center {
+    flex-direction: column;
+    align-items: center;
+  }
+  .form-group.d-flex.justify-content-center button {
+    width: 90%;
+    max-width: 300px;
+    margin: 0.5rem 0;
+  }
+}
+
+/* Result Text Styling */
 #result {
   margin-top: 1.5rem;
   font-size: 1.25rem;
   color: #0d6efd;
+  text-align: center;
 }
 
-/* Icon Styling (Font Awesome) */
+/* Icon Styling สำหรับ Font Awesome */
 .icon {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin-right: 0.5rem;
   vertical-align: middle;
   color: #0d6efd;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  form {
-    padding: 1.5rem;
-  }
-  .btn-primary, .btn-danger {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
+/* Emoji Styling (ถ้ามีการใช้) */
+.emoji {
+  font-size: 1.5rem;
+  vertical-align: middle;
 }
