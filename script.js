@@ -68,6 +68,23 @@ function calculateYears(thaiDateStr) {
   return diffMs / (1000 * 60 * 60 * 24 * 365.25)
 }
 
+// ฟังก์ชันคำนวณช่วงเวลา (เป็นปีทศนิยม) จาก startDateStr ถึง fixedDateStr (ทั้งคู่ในรูปแบบ dd/MM/yyyy ที่เป็น พ.ศ.)
+function calculatePeriod(startDateStr, fixedDateStr) {
+  const startDate = parseThaiDate(startDateStr)
+  const fixedDate = parseThaiDate(fixedDateStr)
+  if (!startDate || !fixedDate) return 0
+  const diffMs = fixedDate - startDate
+  return diffMs / (1000 * 60 * 60 * 24 * 365.25)
+}
+
+// ฟังก์ชันดึงปีจากวันที่ไทย (ในรูปแบบ dd/MM/yyyy พ.ศ.)
+function getThaiYear(dateStr) {
+  if (!dateStr) return null
+  const parts = dateStr.split("/")
+  if (parts.length !== 3) return null
+  return parseInt(parts[2], 10)
+}
+
 // ฟังก์ชันตรวจสอบเงื่อนไข (เช่น ">=5,<10") กับค่า value
 function checkCondition(value, conditionStr) {
   if (!conditionStr) return true
@@ -189,49 +206,124 @@ document
     const salaryInput = parseFloat(document.getElementById("salary").value) || 0
     const salary5yInput =
       parseFloat(document.getElementById("salary5y").value) || 0
-    const posAmtInput =
-      parseFloat(document.getElementById("pos_amt").value) || 0
     const lastInsDate = document.getElementById("last_ins_date").value
     const lastInsCodeForm = document.getElementById("last_ins_code").value
 
-    // คำนวณจำนวนปีจากวันที่ (แปลงจาก พ.ศ. เป็น Date (ค.ศ.) ก่อนคำนวณ)
-    const begYears = calculateYears(begPosDate)
-    const posLevYears = calculateYears(posLevDate)
-    const lastInsYears = calculateYears(lastInsDate)
+    const now = new Date()
+    const currentBuddhistYear = now.getFullYear() + 543
 
-    // ค้นหา record ที่ตรงกับเงื่อนไขทั้งหมด
-    const matchedRecords = jsonData.filter((item) => {
+    // กำหนด fixed date สำหรับคำนวณช่วงเวลา
+    const fixedBegPosDate = `28/5/${currentBuddhistYear}` // สำหรับ beg_pos_period
+    const fixedPosLevDate = `28/5/${currentBuddhistYear}` // สำหรับ pos_lev_period
+    const fixedLastInsDate = `28/7/${currentBuddhistYear}` // สำหรับ last_ins_period
+
+    // คำนวณช่วงเวลาจากวันที่บรรจุ และวันที่เข้าสู่ระดับตำแหน่ง
+    const begPosPeriodInput = calculatePeriod(begPosDate, fixedBegPosDate)
+    const posLevPeriodInput = calculatePeriod(posLevDate, fixedPosLevDate)
+    const lastInsPeriodInput = calculatePeriod(lastInsDate, fixedLastInsDate)
+
+    // ตรวจสอบเงื่อนไข "ปีติดกัน" สำหรับเครื่องราชฯ
+    // หาก (ปีของ last_ins_date) + 1 เท่ากับปีปัจจุบัน (ในรูปแบบ พ.ศ.)
+    if (lastInsDate) {
+      const lastInsYear = getThaiYear(lastInsDate)
+      if (lastInsYear !== null && lastInsYear + 1 === currentBuddhistYear) {
+        Swal.fire({
+          title: "ผลการตรวจสอบ",
+          text: "ไม่เสนอขอเครื่องราชฯ ในปีติดกัน",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+        })
+        return
+      }
+    }
+
+    // ตรวจสอบเงื่อนไข "ได้รับเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
+    // โดยตรวจสอบจาก record ที่มี personal_type, pos_lev ตรงกัน และ
+    // lastInsCodeForm (จาก form) ตรงกับ record.ins_code_name_full
+    // รวมถึง record.ins_code_highest_of_pos_lev === "highest"
+    const highestRecord = jsonData.find(
+      (item) =>
+        item.personal_type === personalValue &&
+        item.pos_lev === posLevValue &&
+        lastInsCodeForm &&
+        lastInsCodeForm === item.ins_code_name_full &&
+        item.ins_code_highest_of_pos_lev === "highest"
+    )
+    if (highestRecord) {
+      Swal.fire({
+        title: "ผลการตรวจสอบ",
+        text: "ได้รับเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+      })
+      return
+    }
+
+    // ตรวจสอบเงื่อนไขเบื้องต้น: หาก personalValue เป็น "ข้าราชการ", "ลูกจ้างประจำ" หรือ "พนักงานราชการ"
+    // และช่วงเวลาจากวันที่บรรจุไม่ผ่านเงื่อนไขใน record (ไม่มี record ใดที่ผ่าน checkCondition สำหรับ beg_pos_period)
+    if (
+      (personalValue === "ข้าราชการ" ||
+        personalValue === "ลูกจ้างประจำ" ||
+        personalValue === "พนักงานราชการ") &&
+      !jsonData.some(
+        (item) =>
+          item.personal_type === personalValue &&
+          checkCondition(begPosPeriodInput, item.beg_pos_period)
+      )
+    ) {
+      Swal.fire({
+        title: "ผลการตรวจสอบ",
+        text: "คุณสมบัติยังไม่ถึงเกณฑ์",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+      })
+      return
+    }
+
+    // Query เงื่อนไขทั้งหมดเพื่อเสนอเครื่องราชฯ ใหม่
+    let matchedRecords = jsonData.filter((item) => {
       return (
         item.personal_type === personalValue &&
         item.pos_type === posTypeValue &&
         item.pos_lev === posLevValue &&
-        checkCondition(begYears, item.beg_pos_period) &&
-        checkCondition(posLevYears, item.pos_lev_period) &&
+        checkCondition(begPosPeriodInput, item.beg_pos_period) &&
+        checkCondition(posLevPeriodInput, item.pos_lev_period) &&
         checkCondition(salaryInput, item.salary) &&
         checkCondition(salary5yInput, item.salary5y) &&
-        checkCondition(posAmtInput, item.pos_amt) &&
-        checkCondition(lastInsYears, item.last_ins_period)
+        checkCondition(lastInsPeriodInput, item.last_ins_period)
       )
     })
 
+    // หากมีการระบุเครื่องราชฯ ที่ได้รับไปแล้ว (จากฟอร์ม last_ins_code)
+    // ต้องเลือกเฉพาะ record ที่มี ins_code_order สูงกว่าเครื่องราชฯ ก่อนหน้า
+    let lastReceivedOrder = null
+    if (lastInsCodeForm) {
+      const prevRecord = jsonData.find(
+        (item) => item.ins_code_name_full === lastInsCodeForm
+      )
+      if (prevRecord) {
+        lastReceivedOrder = prevRecord.ins_code_order
+      }
+      matchedRecords = matchedRecords.filter((item) => {
+        return (
+          lastReceivedOrder === null || item.ins_code_order > lastReceivedOrder
+        )
+      })
+    }
+
+    // หากพบ record ที่ตรงเงื่อนไข ให้เลือก record ที่มี order น้อยที่สุด (เรียงจากน้อยไปมาก)
     if (matchedRecords.length > 0) {
-      // เรียงลำดับตาม order (ค่าลำดับน้อยสุด)
       matchedRecords.sort((a, b) => a.order - b.order)
       Swal.fire({
         title: "ผลการตรวจสอบ",
-        text:
-          "เครื่องราชชั้นที่เสนอขอ: " +
-          matchedRecords[0].ins_code_name +
-          " (" +
-          matchedRecords[0].ins_code +
-          ")",
+        text: "เครื่องราชฯ ที่เสนอขอ: " + matchedRecords[0].ins_code_name_full,
         icon: "success",
         confirmButtonText: "ตกลง",
       })
     } else {
       Swal.fire({
         title: "ผลการตรวจสอบ",
-        text: "ไม่พบข้อมูลที่ตรงกับเงื่อนไข",
+        text: "คุณสมบัติยังไม่ถึงเกณฑ์",
         icon: "error",
         confirmButtonText: "ตกลง",
       })

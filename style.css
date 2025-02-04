@@ -114,6 +114,11 @@ label {
   background-color: #bb2d3b;
 }
 
+.form-group.d-flex.justify-content-center {
+  padding-top: 2rem;
+}
+
+
 /* ปุ่มในกลุ่มปุ่ม (Center and Spacing) */
 .form-group.d-flex.justify-content-center button {
   min-width: 200px;

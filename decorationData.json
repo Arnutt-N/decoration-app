@@ -15,6 +15,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ม.",
             "ins_code_name": "เบญจมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "เบญจมาภรณ์มงกุฎไทย (บ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 5
         },
         {
@@ -32,6 +34,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ช.",
             "ins_code_name": "เบญจมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "เบญจมาภรณ์ช้างเผือก (บ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 6
         },
         {
@@ -49,6 +53,8 @@
             "last_ins_period": "",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -66,6 +72,8 @@
             "last_ins_period": "",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 8
         },
         {
@@ -75,7 +83,7 @@
             "pos_type": "ทั่วไป",
             "pos_lev": "ชำนาญงาน",
             "beg_pos_period": ">=5",
-            "pos_lev_period": "",
+            "pos_lev_period": "<5",
             "salary": "",
             "salary5y": "",
             "pos_amt": "",
@@ -83,6 +91,8 @@
             "last_ins_period": "",
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 9
         },
         {
@@ -100,6 +110,8 @@
             "last_ins_period": "",
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 10
         },
         {
@@ -109,7 +121,7 @@
             "pos_type": "ทั่วไป",
             "pos_lev": "อาวุโส",
             "beg_pos_period": ">=5",
-            "pos_lev_period": "",
+            "pos_lev_period": "<5",
             "salary": "",
             "salary5y": "",
             "pos_amt": "",
@@ -117,6 +129,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 11
         },
         {
@@ -134,6 +148,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 12
         },
         {
@@ -151,6 +167,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -168,6 +186,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -185,6 +205,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 14
         },
         {
@@ -202,6 +224,8 @@
             "last_ins_period": "",
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 9
         },
         {
@@ -212,13 +236,15 @@
             "pos_lev": "ชำนาญการ",
             "beg_pos_period": ">=5",
             "pos_lev_period": "",
-            "salary": "",
+            "salary": "<22140",
             "salary5y": "",
             "pos_amt": "",
             "last_ins_code": "",
             "last_ins_period": "",
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 10
         },
         {
@@ -236,6 +262,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 11
         },
         {
@@ -253,6 +281,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 12
         },
         {
@@ -263,13 +293,15 @@
             "pos_lev": "ชำนาญการพิเศษ",
             "beg_pos_period": ">=5",
             "pos_lev_period": "",
-            "salary": "",
+            "salary": "<58390",
             "salary5y": "",
             "pos_amt": "",
             "last_ins_code": "",
             "last_ins_period": "",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -287,6 +319,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 13
         },
         {
@@ -304,6 +338,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -321,6 +357,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -338,6 +376,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 14
         },
         {
@@ -355,6 +395,8 @@
             "last_ins_period": ">=1",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -372,6 +414,8 @@
             "last_ins_period": ">=1",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -389,6 +433,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -406,6 +452,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 15
         },
         {
@@ -423,6 +471,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ม.ป.ช.",
             "ins_code_name": "มหาปรมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "มหาปรมาภรณ์ช้างเผือก (ม.ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 16
         },
         {
@@ -440,6 +490,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -457,6 +509,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 15
         },
         {
@@ -474,6 +528,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ม.ป.ช.",
             "ins_code_name": "มหาปรมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "มหาปรมาภรณ์ช้างเผือก (ม.ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 16
         },
         {
@@ -484,13 +540,15 @@
             "pos_lev": "ต้น",
             "beg_pos_period": ">=5",
             "pos_lev_period": "",
-            "salary": "",
+            "salary": "<58390",
             "salary5y": "",
             "pos_amt": "",
             "last_ins_code": "",
             "last_ins_period": "",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -508,6 +566,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 13
         },
         {
@@ -525,6 +585,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -542,6 +604,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -559,6 +623,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 15
         },
         {
@@ -576,6 +642,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -593,6 +661,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -610,6 +680,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 15
         },
         {
@@ -627,6 +699,8 @@
             "last_ins_period": ">=1",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -644,6 +718,8 @@
             "last_ins_period": ">=1",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -661,6 +737,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -678,6 +756,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 15
         },
         {
@@ -695,6 +775,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ม.ป.ช.",
             "ins_code_name": "มหาปรมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "มหาปรมาภรณ์ช้างเผือก (ม.ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 16
         },
         {
@@ -712,6 +794,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -729,6 +813,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 15
         },
         {
@@ -746,6 +832,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ม.ป.ช.",
             "ins_code_name": "มหาปรมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "มหาปรมาภรณ์ช้างเผือก (ม.ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 16
         },
         {
@@ -763,6 +851,8 @@
             "last_ins_period": "",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -780,6 +870,8 @@
             "last_ins_period": ">=2",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 14
         },
         {
@@ -797,6 +889,8 @@
             "last_ins_period": ">=2",
             "ins_code": "ม.ว.ม.",
             "ins_code_name": "มหาวชิรมงกุฎ ",
+            "ins_code_name_full": "มหาวชิรมงกุฎ  (ม.ว.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 15
         },
         {
@@ -814,6 +908,8 @@
             "last_ins_period": ">=2",
             "ins_code": "ม.ป.ช.",
             "ins_code_name": "มหาปรมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "มหาปรมาภรณ์ช้างเผือก (ม.ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 16
         },
         {
@@ -831,6 +927,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ม.",
             "ins_code_name": "เบญจมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "เบญจมาภรณ์มงกุฎไทย (บ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 5
         },
         {
@@ -848,6 +946,8 @@
             "last_ins_period": ">=5",
             "ins_code": "บ.ช.",
             "ins_code_name": "เบญจมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "เบญจมาภรณ์ช้างเผือก (บ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 6
         },
         {
@@ -865,6 +965,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -882,6 +984,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ช.",
             "ins_code_name": "เบญจมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "เบญจมาภรณ์ช้างเผือก (บ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 6
         },
         {
@@ -899,6 +1003,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -916,6 +1022,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 8
         },
         {
@@ -933,6 +1041,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ม.",
             "ins_code_name": "เบญจมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "เบญจมาภรณ์มงกุฎไทย (บ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 5
         },
         {
@@ -950,6 +1060,8 @@
             "last_ins_period": ">=5",
             "ins_code": "บ.ช.",
             "ins_code_name": "เบญจมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "เบญจมาภรณ์ช้างเผือก (บ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 6
         },
         {
@@ -967,6 +1079,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -984,6 +1098,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 8
         },
         {
@@ -1001,6 +1117,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ม.",
             "ins_code_name": "เบญจมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "เบญจมาภรณ์มงกุฎไทย (บ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 5
         },
         {
@@ -1018,6 +1136,8 @@
             "last_ins_period": ">=5",
             "ins_code": "บ.ช.",
             "ins_code_name": "เบญจมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "เบญจมาภรณ์ช้างเผือก (บ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 6
         },
         {
@@ -1035,6 +1155,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -1052,6 +1174,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 8
         },
         {
@@ -1069,6 +1193,8 @@
             "last_ins_period": "",
             "ins_code": "บ.ช.",
             "ins_code_name": "เบญจมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "เบญจมาภรณ์ช้างเผือก (บ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 6
         },
         {
@@ -1086,6 +1212,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -1103,6 +1231,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 8
         },
         {
@@ -1120,6 +1250,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 9
         },
         {
@@ -1137,6 +1269,8 @@
             "last_ins_period": "",
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 7
         },
         {
@@ -1154,6 +1288,8 @@
             "last_ins_period": ">=5",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 8
         },
         {
@@ -1171,6 +1307,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 9
         },
         {
@@ -1188,6 +1326,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 10
         },
         {
@@ -1205,6 +1345,8 @@
             "last_ins_period": "",
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
+            "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 8
         },
         {
@@ -1222,6 +1364,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 9
         },
         {
@@ -1239,6 +1383,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 10
         },
         {
@@ -1256,6 +1402,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 11
         },
         {
@@ -1273,6 +1421,8 @@
             "last_ins_period": "",
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 9
         },
         {
@@ -1290,6 +1440,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 10
         },
         {
@@ -1307,6 +1459,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 11
         },
         {
@@ -1324,6 +1478,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 12
         },
         {
@@ -1341,6 +1497,8 @@
             "last_ins_period": "",
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 10
         },
         {
@@ -1358,6 +1516,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 11
         },
         {
@@ -1375,6 +1535,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -1392,6 +1554,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 13
         },
         {
@@ -1409,6 +1573,8 @@
             "last_ins_period": "",
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 11
         },
         {
@@ -1426,6 +1592,8 @@
             "last_ins_period": ">=5",
             "ins_code": "ท.ช.",
             "ins_code_name": "ทวีติยาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ทวีติยาภรณ์ช้างเผือก (ท.ช.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 12
         },
         {
@@ -1443,6 +1611,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ม.",
             "ins_code_name": "ประถมาภรณ์มงกุฎไทย",
+            "ins_code_name_full": "ประถมาภรณ์มงกุฎไทย (ป.ม.)",
+            "ins_code_highest_of_pos_lev": "",
             "ins_code_order": 13
         },
         {
@@ -1460,6 +1630,8 @@
             "last_ins_period": ">=3",
             "ins_code": "ป.ช.",
             "ins_code_name": "ประถมาภรณ์ช้างเผือก",
+            "ins_code_name_full": "ประถมาภรณ์ช้างเผือก (ป.ช.)",
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 14
         }
     ]
