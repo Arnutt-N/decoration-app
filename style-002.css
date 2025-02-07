@@ -59,6 +59,31 @@ label {
   box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
 }
 
+/* Input Group สำหรับ Date Picker */
+.input-group {
+  display: flex;
+}
+
+.input-group .form-control {
+  flex: 1;
+  border-right: 0;
+}
+
+.input-group button {
+  border: 1px solid #ccc;
+  border-left: 0;
+  background-color: #ffffff;
+  color: #0d6efd;
+  border-radius: 0 8px 8px 0;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.input-group button:hover {
+  background-color: #0d6efd;
+  color: #ffffff;
+}
 
 /* Button Styling */
 .btn-primary {
@@ -128,4 +153,10 @@ label {
   margin-right: 0.5rem;
   vertical-align: middle;
   color: #0d6efd;
+}
+
+/* Emoji Styling (ถ้ามีการใช้) */
+.emoji {
+  font-size: 1.5rem;
+  vertical-align: middle;
 }

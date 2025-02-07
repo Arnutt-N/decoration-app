@@ -12,7 +12,12 @@ async function loadDecorationData() {
     jsonData = data.decorData
     initPersonalType()
     updateSalary5YLabel()
-    initLastInsCode("", "", jsonData) // Initialize with empty strings, and pass jsonData
+    initLastInsCode("", "", null) // Initialize with empty strings
+
+    // Add initialization code at the end of loadDecorationData() function, before closing curly brackets.
+    document.getElementById("pos_type").disabled = true
+    document.getElementById("pos_lev").disabled = true
+    document.getElementById("last_ins_code").disabled = true
   } catch (error) {
     console.error("Error fetching decoration data:", error)
     Swal.fire({
@@ -26,13 +31,46 @@ async function loadDecorationData() {
 
 loadDecorationData()
 
+// ตั้งค่า Air Datepicker ให้กับ input ที่มี class "datepicker"
+document.addEventListener("DOMContentLoaded", function () {
+  const datepickers = document.querySelectorAll(".datepicker")
+  datepickers.forEach((input) => {
+    new AirDatepicker(input, {
+      language: "th",
+      dateFormat: "dd/MM/yyyy",
+      autoClose: true,
+      todayHighlight: true,
+    })
+  })
+
+  // ตั้ง event listener สำหรับปุ่ม date picker (ถ้ามี)
+  const btnBegPos = document.getElementById("btn_beg_pos_date")
+  if (btnBegPos) {
+    btnBegPos.addEventListener("click", function () {
+      document.getElementById("beg_pos_date").focus()
+    })
+  }
+  const btnPosLev = document.getElementById("btn_pos_lev_date")
+  if (btnPosLev) {
+    btnPosLev.addEventListener("click", function () {
+      document.getElementById("pos_lev_date").focus()
+    })
+  }
+  const btnLastIns = document.getElementById("btn_last_ins_date")
+  if (btnLastIns) {
+    btnLastIns.addEventListener("click", function () {
+      document.getElementById("last_ins_date").focus()
+    })
+  }
+})
+
 // ฟังก์ชันแปลงวันที่จากรูปแบบ dd/MM/yyyy (ที่เป็นปี พ.ศ.) ให้เป็น Date object (ปี ค.ศ.)
 function parseThaiDate(thaiDateStr) {
   if (!thaiDateStr) return null
   const parts = thaiDateStr.split("/")
   if (parts.length !== 3) return null
   const day = parseInt(parts[0], 10)
-  const month = parseInt(parts[1], 10) - 1 // Month is 0-indexed in JavaScript Date
+  const month = parseInt(parts[1], 10) - 1
   const yearBE = parseInt(parts[2], 10)
   const yearAD = yearBE - 543
   return new Date(yearAD, month, day)
@@ -103,6 +141,12 @@ function initPersonalType() {
   const types = [...new Set(jsonData.map((item) => item.personal_type))]
   const personalTypeSelect = document.getElementById("personal_type")
   populateDropdown("personal_type", types)
+
+  if (types.length === 0) {
+    personalTypeSelect.disabled = true
+  } else {
+    personalTypeSelect.disabled = false
+  }
 }
 
 // เมื่อเลือกประเภทบุคลากร ให้กรองข้อมูล dropdown "ประเภทตำแหน่ง"
@@ -118,12 +162,28 @@ function updatePosType() {
   const posTypes = [...new Set(filtered.map((item) => item.pos_type))]
   populateDropdown("pos_type", posTypes)
 
-  // Clear and disable pos_lev AND last_ins_code
-  populateDropdown("pos_lev", []) // เคลียร์ dropdown สำหรับ "ระดับตำแหน่ง"
-  posLevSelect.value = "" // VERY IMPORTANT: Reset the selected value
+  // Disable pos_type if no options are available
+  posTypeSelect.disabled = posTypes.length === 0
 
-  initLastInsCode("", "", null) // Clear last_ins_code
-  lastInsCodeSelect.value = ""
+  // Clear and disable pos_lev
+  populateDropdown("pos_lev", []) // เคลียร์ dropdown สำหรับ "ระดับตำแหน่ง"
+  posLevSelect.disabled = true
+
+  // Custom disabling logic based on personalValue
+  if (personalValue === "ลูกจ้างประจำ") {
+    posTypeSelect.disabled = true
+    posLevSelect.disabled = true
+  } else if (personalValue === "พนักงานราชการ") {
+    //Disable pos_lev only if a posType is selected, and it is not "กลุ่มงานเชี่ยวชาญพิเศษ"
+    posLevSelect.disabled =
+      posTypeSelect.value === "" ||
+      posTypeSelect.value !== "กลุ่มงานเชี่ยวชาญพิเศษ"
+  } else {
+    posLevSelect.disabled = posTypes.length === 0
+  }
+  //Disable last_ins_code and clear data.
+  initLastInsCode("", "", null)
+  lastInsCodeSelect.disabled = true
 }
 
 // เมื่อเลือกประเภทตำแหน่ง ให้กรองข้อมูล dropdown "ระดับตำแหน่ง"
@@ -139,8 +199,17 @@ function updatePosLev() {
   const posLevs = [...new Set(filtered.map((item) => item.pos_lev))]
   populateDropdown("pos_lev", posLevs)
 
-  // After populating pos_lev, update last_ins_code based on selected pos_type and pos_lev
-  initLastInsCode(posTypeValue, posLevSelect.value || "", jsonData) // Pass jsonData
+  // Disable pos_lev if no options are available
+  posLevSelect.disabled = posLevs.length === 0
+  // After populating pos_lev, update last_ins_code based on selected pos_type and pos_lev and do filter
+  initLastInsCode(
+    posTypeValue,
+    posLevSelect.value === undefined ? "" : posLevSelect.value,
+    jsonData
+  )
+
+  const lastInsCodeSelect = document.getElementById("last_ins_code")
+  lastInsCodeSelect.disabled = posLevs.length === 0
 }
 
 // ฟังก์ชันอัพเดท label เงินเดือน 5 ปี ย้อนหลัง (คำนวณปี = พ.ศ. ปัจจุบัน - 5)
@@ -155,40 +224,18 @@ function updateSalary5YLabel() {
 // ใช้ข้อมูล ins_code, ins_code_name และ ins_code_order จาก jsonData
 function initLastInsCode(posType, posLev, jsonDataValue) {
   const insMap = new Map()
+
   let filteredData = []
-
   if (jsonDataValue) {
-    // Filter jsonData based on posType and posLev, handling empty strings
+    // Filter jsonData based on posType and posLev
     filteredData = jsonDataValue.filter((item) => {
-      return (
-        (posType === "" || item.pos_type === posType) &&
-        (posLev === "" || item.pos_lev === posLev)
-      )
-    })
-
-    // Find min and max ins_code_order *within the filtered data*
-    let minOrder = Infinity
-    let maxOrder = -Infinity
-
-    filteredData.forEach((item) => {
-      if (item.ins_code_order < minOrder) {
-        minOrder = item.ins_code_order
-      }
-      if (item.ins_code_order > maxOrder) {
-        maxOrder = item.ins_code_order
-      }
-    })
-
-    // Filter AGAIN, based on min/max order.
-    filteredData = filteredData.filter((item) => {
-      return item.ins_code_order >= minOrder && item.ins_code_order <= maxOrder
+      return item.pos_type === posType && item.pos_lev === posLev
     })
   }
 
-  insMap.clear() // Clear map before (re)populating
+  insMap.clear() // Clear the Map before repopulating
 
   filteredData.forEach((item) => {
-    // Only add to the map if ins_code and ins_code_name exist and the code isn't already in the map
     if (item.ins_code && item.ins_code_name && !insMap.has(item.ins_code)) {
       insMap.set(item.ins_code, {
         ins_code: item.ins_code,
@@ -199,17 +246,21 @@ function initLastInsCode(posType, posLev, jsonDataValue) {
   })
 
   const insArray = Array.from(insMap.values())
-  insArray.sort((a, b) => a.ins_code_order - b.ins_code_order) // Sort by ins_code_order
+  insArray.sort((a, b) => a.ins_code_order - b.ins_code_order)
 
   const select = document.getElementById("last_ins_code")
-  select.innerHTML = `<option value="">เลือกเครื่องราชชั้นล่าสุด (ถ้ามี)</option>` // Clear options
+  select.innerHTML = `<option value="">เลือกเครื่องราชชั้นล่าสุด (ถ้ามี)</option>` // Clear existing options
   insArray.forEach((option) => {
     const opt = document.createElement("option")
-    opt.value = option.ins_code // ins_code as value
-    opt.textContent = `${option.ins_code_name} (${option.ins_code})` // name (code) as text
+    opt.value = option.ins_code
+    opt.textContent = `${option.ins_code_name} (${option.ins_code})`
     select.appendChild(opt)
   })
+
+  const lastInsCodeSelect = document.getElementById("last_ins_code")
+  lastInsCodeSelect.disabled = insArray.length === 0
 }
+
 // ตั้งค่า event listener สำหรับ dropdown
 document
   .getElementById("personal_type")
@@ -226,19 +277,13 @@ document
     const personalValue = document.getElementById("personal_type").value
     const posTypeValue = document.getElementById("pos_type").value
     const posLevValue = document.getElementById("pos_lev").value
-    let begPosDate = document.getElementById("beg_pos_date").value
-    let posLevDate = document.getElementById("pos_lev_date").value
+    const begPosDate = document.getElementById("beg_pos_date").value
+    const posLevDate = document.getElementById("pos_lev_date").value
     const salaryInput = parseFloat(document.getElementById("salary").value) || 0
     const salary5yInput =
       parseFloat(document.getElementById("salary5y").value) || 0
     const lastInsCodeForm = document.getElementById("last_ins_code").value // ค่านี้ถือเป็น last_ins_code จากฟอร์ม
-    let lastInsDate = document.getElementById("last_ins_date").value // Get last_ins_date
-
-    // Convert dates to Date objects using parseThaiDate
-    begPosDate = parseThaiDate(begPosDate)
-    posLevDate = parseThaiDate(posLevDate)
-    lastInsDate = parseThaiDate(lastInsDate)
-
+    const lastInsDate = document.getElementById("last_ins_date").value // Get last_ins_date
     // Validate that the selected last_ins_code is in the correct range
     if (lastInsCodeForm) {
       const validLastInsCode = jsonData.some(
