@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แบบฟอร์มการตรวจสอบข้อมูลเครื่องราชอิสริยาภรณ์</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Add Bootstrap Icons CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Add Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,18 +16,24 @@
         <div class="form-container p-4 mx-auto" style="max-width: 900px;">
             <div class="form-header">
                 <h2 class="mb-3">
-                    <!-- <i class="bi bi-search me-2"></i> Use Bootstrap Icons -->
-                    การตรวจสอบข้อมูลเครื่องราชอิสริยาภรณ์ (Demo)
+                    <!-- <i class="fas fa-medal me-2"></i> -->
+                    การตรวจสอบข้อมูลเครื่องราชอิสริยาภรณ์ ✨
                 </h2>
-                <h5 >(บัญชี 15 ข้าราชการ บัญชี 25 ลูกจ้างประจำ และบัญชี 26 พนักงานราชการ)</h5>
+                <h5>
+                    <!-- <i class="fas fa-book me-2"></i> -->
+                    (บัญชี 15 ข้าราชการ บัญชี 25 ลูกจ้างประจำ และบัญชี 26 พนักงานราชการ)
+                </h5>
             </div>
 
-            <form id="searchForm" novalidate> <!-- ADD NOVALIDATE HERE -->
+            <form id="searchForm" novalidate>
                 <div class="row g-4">
                     <!-- Category Selection Section -->
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label">ประเภทบุคลากร <span class="required-star">*</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-user-tie me-2"></i> -->
+                                ประเภทบุคลากร <span class="required-star">*</span>
+                            </label>
                             <select id="personal_type" name="ประเภทบุคลากร" class="form-select" required>
                                 <option value="" selected disabled>เลือกประเภทบุคลากร</option>
                                 <!-- Options will be populated by JavaScript -->
@@ -38,7 +44,10 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label">ประเภทตำแหน่ง <span class="required-star">*</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-briefcase me-2"></i> -->
+                                ประเภทตำแหน่ง <span class="required-star">*</span>
+                            </label>
                             <select id="pos_type" name="ประเภทตำแหน่ง" class="form-select" required>
                                 <option value="" selected disabled>เลือกประเภทตำแหน่ง</option>
                                 <!-- Options will be populated by JavaScript -->
@@ -49,7 +58,10 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label">ระดับตำแหน่ง <span class="required-star">*</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-layer-group me-2"></i> -->
+                                ระดับตำแหน่ง <span class="required-star">*</span>
+                            </label>
                             <select id="pos_lev" name="ระดับตำแหน่ง" class="form-select" required>
                                 <option value="" selected disabled>เลือกระดับตำแหน่ง</option>
                                 <!-- Options will be populated by JavaScript -->
@@ -61,7 +73,10 @@
                     <!-- Date Selection Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">วันที่บรรจุ <span class="required-star">*</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-calendar-plus me-2"></i> -->
+                                วันที่บรรจุ <span class="required-star">*</span>
+                            </label>
                             <input type="text" id="beg_pos_date" name="beg_pos_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)" required>
                             <div class="invalid-feedback" id="beg_pos_date_error"></div>
@@ -70,8 +85,11 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน <span
-                                    id="pos_lev_date">(หากไม่มี - ไม่ต้องระบุ)</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-calendar-check me-2"></i> -->
+                                วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน <span id="pos_lev_date">(หากไม่มี -
+                                    ไม่ต้องระบุ)</span>
+                            </label>
                             <input type="text" id="pos_lev_date" name="pos_lev_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)">
                             <div class="invalid-feedback" id="pos_lev_date_error"></div>
@@ -81,7 +99,10 @@
                     <!-- Salary Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เงินเดือนปัจจุบัน <span class="required-star">*</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-coins me-2"></i> -->
+                                เงินเดือนปัจจุบัน <span class="required-star">*</span>
+                            </label>
                             <div class="input-group">
                                 <input type="number" id="salary" name="salary" class="form-control"
                                     placeholder="ระบุเงินเดือน" required>
@@ -93,8 +114,11 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span><span
-                                    id="salary5y_year_no">(หากไม่มี - ไม่ต้องระบุ)</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-money-bill-wave me-2"></i> -->
+                                เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span>
+                                <span id="salary5y_year_no">(หากไม่มี - ไม่ต้องระบุ)</span>
+                            </label>
                             <div class="input-group">
                                 <input type="number" id="salary5y" name="salary5y" class="form-control"
                                     placeholder="ระบุเงินเดือน">
@@ -107,8 +131,10 @@
                     <!-- Medal Selection Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เครื่องราชขั้นล่าสุด <span
-                                    class="required-star">*</span></label></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-award me-2"></i> -->
+                                เครื่องราชฯ ขั้นล่าสุด <span class="required-star">*</span>
+                            </label>
                             <select id="last_ins_code" name="เครื่องราชชั้นล่าสุด" class="form-select" required>
                                 <!-- Options will be populated by JavaScript -->
                                 <option value="" selected disabled>เลือกเครื่องราชขั้นล่าสุด (ถ้ามี)</option>
@@ -119,8 +145,11 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">วันที่ได้รับเครื่องราชขั้นล่าสุด <span
-                                    id="last_ins_date">(หากไม่เคยได้รับ - ไม่ต้องระบุ)</span></label>
+                            <label class="form-label">
+                                <!-- <i class="fas fa-calendar-day me-2"></i> -->
+                                วันที่ได้รับเครื่องราชฯ <span id="last_ins_date">(หากไม่เคยได้รับ -
+                                    ไม่ต้องระบุ)</span>
+                            </label>
                             <input type="text" id="last_ins_date" name="last_ins_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)">
                             <div class="invalid-feedback" id="last_ins_date_error"></div>
@@ -131,19 +160,15 @@
                 <!-- Button Section -->
                 <div class="d-flex justify-content-center gap-3 mt-4">
                     <button type="submit" class="btn btn-primary px-5">
-
+                        <i class="fas fa-search me-2"></i>
                         ตรวจสอบเครื่องราชขั้นถัดไป
                     </button>
                     <button type="reset" id="btnClearForm" class="btn btn-danger px-5">
-
+                        <i class="fas fa-times me-2"></i>
                         ยกเลิก
                     </button>
                 </div>
             </form>
-            <!-- Remove Result Section (to be replaced by SweetAlert2) -->
-            <!-- <div id="result" class="mt-4 text-center"> -->
-            <!-- Display result here -->
-            <!-- </div> -->
         </div>
     </div>
     <!-- SweetAlert2 -->
