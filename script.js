@@ -3,7 +3,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("searchForm")
   form.addEventListener("submit", async function (event) {
     event.preventDefault()
-    form.classList.add("was-validated") // Trigger Bootstrap's validation styling
+    // ตรวจสอบ last_ins_code ก่อนเพิ่ม was-validated
+    const lastInsCode = document.getElementById("last_ins_code")
+    if (
+      !lastInsCode.required ||
+      (lastInsCode.value && lastInsCode.value !== "null")
+    ) {
+      form.classList.add("was-validated") // Trigger Bootstrap's validation styling
+    }
     if (validateForm()) {
       await handleSubmit()
     }
@@ -43,6 +50,138 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- Attach resetForm to reset button ---
   document.getElementById("btnClearForm").addEventListener("click", resetForm)
+
+  // --- Input Blur and Input Event Listeners (for immediate validation) ---
+  const specialPosLevs = [
+    "ชำนาญงาน",
+    "อาวุโส",
+    "ทักษะพิเศษ",
+    "ชำนาญการ",
+    "ชำนาญการพิเศษ",
+    "เชี่ยวชาญ",
+    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 13,000)",
+    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 15,600)",
+    "ต้น",
+    "สูง",
+    "สูง (เงิน ป.จ.ต. 14,500)",
+    "สูง (เงิน ป.จ.ต. 21,000)",
+    "สูง (เงิน ป.จ.ต. 21,000 - ปลัดกระทรวง)",
+  ]
+  document.querySelectorAll(".form-control, .form-select").forEach((input) => {
+    input.addEventListener("blur", function (event) {
+      const form = document.getElementById("searchForm")
+      const errorDiv = document.getElementById(input.id + "_error")
+      const selectedPosLev = document.getElementById("pos_lev").value
+
+      if (input.required && !input.value) {
+        form.classList.add("was-validated") // Trigger validation only if truly empty
+      } else if (input.id === "last_ins_code" && input.value === "null") {
+        // Special handling for "never requested" on blur.
+        input.classList.remove("is-invalid")
+        if (errorDiv) {
+          errorDiv.textContent = ""
+          errorDiv.style.display = "none"
+        }
+        // Check other errors and potentially remove was-validated
+        let hasErrors = false
+        document
+          .querySelectorAll(".form-control[required], .form-select[required]")
+          .forEach((reqInput) => {
+            if (
+              !reqInput.value ||
+              (reqInput.id === "last_ins_code" && reqInput.value === "null")
+            ) {
+              hasErrors = true
+            }
+          })
+        if (!hasErrors) {
+          form.classList.remove("was-validated")
+        }
+      } else if (
+        input.id === "pos_lev_date" &&
+        specialPosLevs.includes(selectedPosLev) &&
+        !input.value
+      ) {
+        // pos_lev_date blur, special pos_lev, and empty
+        input.classList.add("is-invalid")
+        if (errorDiv) {
+          errorDiv.textContent = "กรุณากรอกข้อมูลในช่องนี้"
+          errorDiv.style.display = "block"
+        }
+        form.classList.add("was-validated") // Add was-validated
+      } else if (
+        input.id === "pos_lev_date" &&
+        (!specialPosLevs.includes(selectedPosLev) || input.value)
+      ) {
+        // pos_lev_date blur, NOT special pos_lev OR has value
+        input.classList.remove("is-invalid")
+        if (errorDiv) {
+          errorDiv.textContent = ""
+          errorDiv.style.display = "none"
+        }
+      }
+    })
+
+    input.addEventListener("input", function (event) {
+      const form = document.getElementById("searchForm")
+      const errorDiv = document.getElementById(input.id + "_error")
+      const selectedPosLev = document.getElementById("pos_lev").value
+
+      if (input.id === "pos_lev_date") {
+        if (specialPosLevs.includes(selectedPosLev) && input.value) {
+          // ถ้าเป็น pos_lev_date, เป็น special case, และมี value
+          input.classList.remove("is-invalid")
+          if (errorDiv) {
+            errorDiv.textContent = ""
+            errorDiv.style.display = "none"
+          }
+        } else if (specialPosLevs.includes(selectedPosLev) && !input.value) {
+          // ถ้าเป็น pos_lev_date, เป็น special case, และ *ไม่มี* value
+          input.classList.add("is-invalid")
+          if (errorDiv) {
+            errorDiv.textContent = "กรุณากรอกข้อมูลในช่องนี้"
+            errorDiv.style.display = "block"
+          }
+        } else if (!specialPosLevs.includes(selectedPosLev)) {
+          input.classList.remove("is-invalid")
+          if (errorDiv) {
+            errorDiv.textContent = ""
+            errorDiv.style.display = "none"
+          }
+        }
+      } else if (input.value) {
+        // กรณี input field อื่นๆ ที่ required
+
+        input.classList.remove("is-invalid")
+        // ไม่ต้อง add/remove is-valid แล้ว
+
+        if (errorDiv) {
+          errorDiv.textContent = ""
+          errorDiv.style.display = "none"
+        }
+        let hasErrors = false
+        document
+          .querySelectorAll(".form-control[required], .form-select[required]")
+          .forEach((reqInput) => {
+            if (
+              !reqInput.value ||
+              (reqInput.id === "last_ins_code" && reqInput.value === "null")
+            ) {
+              hasErrors = true
+            }
+          })
+        if (!hasErrors) {
+          form.classList.remove("was-validated")
+        }
+      } else if (input.required) {
+        input.classList.add("is-invalid")
+        if (errorDiv) {
+          errorDiv.textContent = "กรุณากรอกข้อมูลในช่องนี้"
+          errorDiv.style.display = "block"
+        }
+      }
+    })
+  })
 })
 
 // --- Helper Functions ---
@@ -50,22 +189,13 @@ document.addEventListener("DOMContentLoaded", function () {
 // Calculate period in years between two dates (dd/mm/yyyy)
 function calculatePeriodInYears(startDateStr, endDateStr) {
   if (!startDateStr || !endDateStr) return null // Handle null/empty
-  const startDateParts = startDateStr.split("/")
-  const endDateParts = endDateStr.split("/")
-  const startDate = new Date(
-    startDateParts[2],
-    startDateParts[1] - 1,
-    startDateParts[0]
-  )
-  const endDate = new Date(
-    endDateParts[2],
-    endDateParts[1] - 1,
-    endDateParts[0]
-  )
+  // ใช้ Moment.js ในการคำนวณ
+  const startDate = moment(startDateStr, "DD/MM/YYYY")
+  const endDate = moment(endDateStr, "DD/MM/YYYY")
 
-  const diffInMilliseconds = endDate - startDate
-  const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)
-  return diffInYears
+  if (!startDate.isValid() || !endDate.isValid()) return null // Handle invalid dates
+
+  return endDate.diff(startDate, "years", true) // 'true' for floating point result
 }
 
 // Parse period string (e.g., ">=5,<10")
@@ -195,9 +325,6 @@ async function populateDropdowns() {
     personalTypeSelect.appendChild(option)
   })
 
-  // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" ---
-  // Moved *inside* updateLastInsCode
-
   // --- Hierarchy Logic (pos_type and pos_lev) ---
 
   function updatePosType() {
@@ -323,7 +450,7 @@ async function populateDropdowns() {
       decorationCodeSelect.remove(1)
     }
 
-    // // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" here ---
+    //  --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" here ---
     const defaultOption = document.createElement("option")
     defaultOption.value = "null" // Use actual null value
     defaultOption.textContent = "ไม่เคยได้รับพระราชทานเครื่องราชฯ"
@@ -348,33 +475,37 @@ async function populateDropdowns() {
 }
 
 // --- Date Validation Function ---
+// --- Date Validation Function (with Moment.js) ---
 function isValidDate(dateString) {
   if (!dateString) return true // Allow empty
-  const parts = dateString.split("/")
-  if (parts.length !== 3) return false
 
-  const day = parseInt(parts[0], 10)
-  const month = parseInt(parts[1], 10)
-  const year = parseInt(parts[2], 10)
-
-  if (isNaN(day) || isNaN(month) || isNaN(year)) return false
-  if (day < 1 || day > 31) return false
-  if (month < 1 || month > 12) return false
-  if (year < 1000 || year > 9999) return false // Adjust
-  // Add more robust date checks here (e.g., leap year, days in month) if needed
-
-  return true
+  // ใช้ Moment.js ตรวจสอบ
+  return moment(dateString, "DD/MM/YYYY", true).isValid()
 }
 
 // --- Reset Form Function ---
 function resetForm() {
-  document.getElementById("searchForm").reset()
+  const form = document.getElementById("searchForm")
+  form.reset()
+
+  // Remove validation classes
+  form.classList.remove("was-validated")
+  document.querySelectorAll(".form-control, .form-select").forEach((input) => {
+    input.classList.remove("is-invalid")
+    input.classList.remove("is-valid") // Remove is-valid too
+  })
+  // Clear error messages
+  clearAllErrors()
 
   // Reset selects to default state, triggering updates
   document.getElementById("personal_type").value = ""
   document.getElementById("personal_type").dispatchEvent(new Event("change")) // Trigger change
-  // Clear error messages
-  clearAllErrors()
+  // Reset last_ins_code as well
+  document.getElementById("last_ins_code").value = "" // Set to default empty value.
+  document.getElementById("last_ins_code").dispatchEvent(new Event("change")) // Trigger the change.
+  // Reset pos_lev
+  document.getElementById("pos_lev").value = ""
+  document.getElementById("pos_lev").dispatchEvent(new Event("change"))
 }
 // --- Clear All Error Messages ---
 function clearAllErrors() {
@@ -390,6 +521,7 @@ function clearAllErrors() {
     control.classList.remove("is-invalid")
   })
 }
+
 // --- Validate Form ---
 function validateForm() {
   let isValid = true
@@ -411,20 +543,49 @@ function validateForm() {
     "pos_lev",
     "beg_pos_date",
     "salary",
+    "last_ins_code",
   ]
   requiredFields.forEach((fieldId) => {
     const inputElement = document.getElementById(fieldId)
-    // For select elements, we check against both "" (initial state) and "null" (for "never requested")
-    // For text/number inputs, an empty string is invalid
-    if (
-      !inputElement.value ||
-      inputElement.value.trim() === "" ||
-      inputElement.value === "null"
-    ) {
-      showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
-      isValid = false
+
+    // Special handling for last_ins_code (select element).
+    if (fieldId === "last_ins_code") {
+      if (!inputElement.value) {
+        showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
+        isValid = false
+      }
+    } else {
+      // For other required fields (not last_ins_code).
+      if (!inputElement.value || inputElement.value.trim() === "") {
+        showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
+        isValid = false
+      }
     }
   })
+
+  // --- Conditional Required Check for pos_lev_date ---
+  const posLevDateInput = document.getElementById("pos_lev_date")
+  const selectedPosLev = document.getElementById("pos_lev").value
+  const specialPosLevs = [
+    "ชำนาญงาน",
+    "อาวุโส",
+    "ทักษะพิเศษ",
+    "ชำนาญการ",
+    "ชำนาญการพิเศษ",
+    "เชี่ยวชาญ",
+    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 13,000)",
+    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 15,600)",
+    "ต้น",
+    "สูง",
+    "สูง (เงิน ป.จ.ต. 14,500)",
+    "สูง (เงิน ป.จ.ต. 21,000)",
+    "สูง (เงิน ป.จ.ต. 21,000 - ปลัดกระทรวง)",
+  ]
+
+  if (specialPosLevs.includes(selectedPosLev) && !posLevDateInput.value) {
+    showError(posLevDateInput, "กรุณากรอกข้อมูลในช่องนี้") // ใช้ showError()
+    isValid = false
+  }
 
   // --- Date Validation (if provided) ---
   const dateFields = ["beg_pos_date", "pos_lev_date", "last_ins_date"]
@@ -483,6 +644,23 @@ async function calculateDecoration(formData) {
   const highestOrders = getHighestOrders(data)
   const highestOrderOfPosLev =
     highestOrders[pos_type_input + pos_lev_input] || 0
+
+  // --- NEW: Special Condition for "ชำนาญการพิเศษ" ---
+  let specialDecoration = null
+  if (
+    personal_type_input === "ข้าราชการ" &&
+    pos_type_input === "วิชาการ" &&
+    pos_lev_input === "ชำนาญการพิเศษ" &&
+    pos_lev_period_input >= 3 &&
+    pos_lev_period_input < 5 &&
+    salary_input > 60000
+  ) {
+    // หา decoration ที่สูงกว่าปกติ 1 ขั้น
+    const nextOrder = (highestOrderOfPosLev || 0) + 1 // +1
+    specialDecoration = data.decorData.find(
+      (item) => item.ins_code_order === nextOrder
+    )
+  }
 
   // --- Filter based on form input, only if the input is provided ---
   let filteredData = data.decorData.filter((item) => {
@@ -581,8 +759,11 @@ async function calculateDecoration(formData) {
   if (filteredData.length > 0) {
     let selectedDecoration = null
 
-    // If "never requested" or no selection, find the *first* (lowest order) within the highest
-    if (
+    // *** Check for specialDecoration first ***
+    if (specialDecoration) {
+      selectedDecoration = specialDecoration
+    } else if (
+      //  ใช้ else if
       !last_ins_code_name_full_input ||
       last_ins_code_name_full_input === "null"
     ) {
@@ -616,6 +797,11 @@ async function calculateDecoration(formData) {
 
 // --- Form Submission Handler ---
 async function handleSubmit() {
+  // **เพิ่ม:** เรียก validateForm() และตรวจสอบผลลัพธ์
+  if (!validateForm()) {
+    return // ถ้า validation ไม่ผ่าน ไม่ต้องทำอะไรต่อ
+  }
+
   // Collect form data, handling null/empty values
   const formData = {
     personal_type_input: document.getElementById("personal_type").value || null,
