@@ -324,10 +324,10 @@ async function populateDropdowns() {
     }
 
     // // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" here ---
-    // const defaultOption = document.createElement("option")
-    // defaultOption.value = "null" // Use actual null value
-    // defaultOption.textContent = "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ"
-    // decorationCodeSelect.appendChild(defaultOption)
+    const defaultOption = document.createElement("option")
+    defaultOption.value = "null" // Use actual null value
+    defaultOption.textContent = "ไม่เคยได้รับพระราชทานเครื่องราชฯ"
+    decorationCodeSelect.appendChild(defaultOption)
 
     // Populate with filtered and sorted decorations
     uniqueDecorations.forEach((code) => {

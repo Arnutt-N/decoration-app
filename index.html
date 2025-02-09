@@ -62,7 +62,7 @@
                         <div class="form-group">
                             <label class="form-label">วันที่บรรจุ <span class="required-star">*</span></label>
                             <input type="text" id="beg_pos_date" name="beg_pos_date" class="form-control"
-                                placeholder="วว/ดด/ปปปป (พ.ศ.)">
+                                placeholder="วว/ดด/ปปปป">
                             <div class="invalid-feedback" id="beg_pos_date_error"></div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                             <label class="form-label">วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน <span
                                     id="pos_lev_date">(หากไม่มี - ไม่ต้องระบุ)</span></label>
                             <input type="text" id="pos_lev_date" name="pos_lev_date" class="form-control"
-                                placeholder="วว/ดด/ปปปป (พ.ศ.)">
+                                placeholder="วว/ดด/ปปปป">
                             <div class="invalid-feedback" id="pos_lev_date_error"></div>
                         </div>
                     </div>
@@ -106,8 +106,7 @@
                     <!-- Medal Selection Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เครื่องราชขั้นล่าสุด <span id="last_ins_code">(หากไม่เคยได้รับ -
-                                    ไม่ต้องระบุ)</span></label>
+                            <label class="form-label">เครื่องราชขั้นล่าสุด <span id="last_ins_date">(หากไม่เคยได้รับ - ไม่ต้องระบุ)</span></label></label>
                             <select id="last_ins_code" name="เครื่องราชชั้นล่าสุด" class="form-select">
                                 <!-- Options will be populated by JavaScript -->
                                 <option value="" selected disabled>เลือกเครื่องราชขั้นล่าสุด (ถ้ามี)</option>
@@ -121,7 +120,7 @@
                             <label class="form-label">วันที่ได้รับเครื่องราชขั้นล่าสุด <span
                                     id="last_ins_date">(หากไม่เคยได้รับ - ไม่ต้องระบุ)</span></label>
                             <input type="text" id="last_ins_date" name="last_ins_date" class="form-control"
-                                placeholder="วว/ดด/ปปปป (พ.ศ.)">
+                                placeholder="วว/ดด/ปปปป">
                             <div class="invalid-feedback" id="last_ins_date_error"></div>
                         </div>
                     </div>
@@ -130,11 +129,11 @@
                 <!-- Button Section -->
                 <div class="d-flex justify-content-center gap-3 mt-4">
                     <button type="submit" class="btn btn-primary px-5">
-                        <!-- <i class="bi bi-search me-2"></i> -->
+                        <i class="bi bi-search me-2"></i>
                         ตรวจสอบเครื่องราชขั้นถัดไป
                     </button>
                     <button type="reset" id="btnClearForm" class="btn btn-danger px-5">
-                        <!-- <i class="bi bi-x-circle me-2"></i> -->
+                        <i class="bi bi-x-circle me-2"></i>
                         ยกเลิก
                     </button>
                 </div>
