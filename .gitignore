@@ -1,3 +1,5 @@
+*.tmp
+~$*
 index-001.html
 index-002.html
 index-003.html

@@ -21,95 +21,108 @@
                 </h2>
             </div>
 
-            <form id="searchForm"> <!-- Remove needs-validation and novalidate -->
+            <form id="searchForm" novalidate> <!-- ADD NOVALIDATE HERE -->
                 <div class="row g-4">
                     <!-- Category Selection Section -->
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label">ประเภทบุคลากร</label>
+                            <label class="form-label">ประเภทบุคลากร <span class="required-star">*</span></label>
                             <select id="personal_type" name="ประเภทบุคลากร" class="form-select">
                                 <option value="" selected disabled>เลือกประเภทบุคลากร</option>
                                 <!-- Options will be populated by JavaScript -->
                             </select>
+                            <div class="invalid-feedback" id="personal_type_error"></div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label">ประเภทตำแหน่ง</label>
+                            <label class="form-label">ประเภทตำแหน่ง <span class="required-star">*</span></label>
                             <select id="pos_type" name="ประเภทตำแหน่ง" class="form-select">
                                 <option value="" selected disabled>เลือกประเภทตำแหน่ง</option>
                                 <!-- Options will be populated by JavaScript -->
                             </select>
+                            <div class="invalid-feedback" id="pos_type_error"></div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label">ระดับตำแหน่ง</label>
+                            <label class="form-label">ระดับตำแหน่ง <span class="required-star">*</span></label>
                             <select id="pos_lev" name="ระดับตำแหน่ง" class="form-select">
                                 <option value="" selected disabled>เลือกระดับตำแหน่ง</option>
                                 <!-- Options will be populated by JavaScript -->
                             </select>
+                            <div class="invalid-feedback" id="pos_lev_error"></div>
                         </div>
                     </div>
 
                     <!-- Date Selection Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">วันที่บรรจุ</label>
+                            <label class="form-label">วันที่บรรจุ <span class="required-star">*</span></label>
                             <input type="text" id="beg_pos_date" name="beg_pos_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)">
+                            <div class="invalid-feedback" id="beg_pos_date_error"></div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน</label>
+                            <label class="form-label">วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน <span
+                                    id="pos_lev_date">(หากไม่มี - ไม่ต้องระบุ)</span></label>
                             <input type="text" id="pos_lev_date" name="pos_lev_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)">
+                            <div class="invalid-feedback" id="pos_lev_date_error"></div>
                         </div>
                     </div>
 
                     <!-- Salary Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เงินเดือนปัจจุบัน</label>
+                            <label class="form-label">เงินเดือนปัจจุบัน <span class="required-star">*</span></label>
                             <div class="input-group">
                                 <input type="number" id="salary" name="salary" class="form-control"
                                     placeholder="ระบุเงินเดือน">
                                 <span class="input-group-text">บาท</span>
                             </div>
+                            <div class="invalid-feedback" id="salary_error"></div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span></label>
+                            <label class="form-label">เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span><span
+                                    id="salary5y_year_no">(หากไม่มี - ไม่ต้องระบุ)</span></label>
                             <div class="input-group">
                                 <input type="number" id="salary5y" name="salary5y" class="form-control"
                                     placeholder="ระบุเงินเดือน">
                                 <span class="input-group-text">บาท</span>
                             </div>
+                            <div class="invalid-feedback" id="salary5y_error"></div>
                         </div>
                     </div>
 
                     <!-- Medal Selection Section -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">เครื่องราชขั้นล่าสุด</label>
+                            <label class="form-label">เครื่องราชขั้นล่าสุด <span id="last_ins_code">(หากไม่เคยได้รับ -
+                                    ไม่ต้องระบุ)</span></label>
                             <select id="last_ins_code" name="เครื่องราชชั้นล่าสุด" class="form-select">
                                 <!-- Options will be populated by JavaScript -->
                                 <option value="" selected disabled>เลือกเครื่องราชขั้นล่าสุด (ถ้ามี)</option>
                             </select>
+                            <div class="invalid-feedback" id="last_ins_code_error"></div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">วันที่ได้รับเครื่องราชขั้นล่าสุด</label>
+                            <label class="form-label">วันที่ได้รับเครื่องราชขั้นล่าสุด <span
+                                    id="last_ins_date">(หากไม่เคยได้รับ - ไม่ต้องระบุ)</span></label>
                             <input type="text" id="last_ins_date" name="last_ins_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)">
+                            <div class="invalid-feedback" id="last_ins_date_error"></div>
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("searchForm")
   form.addEventListener("submit", async function (event) {
     event.preventDefault()
-    await handleSubmit() // Call the submit handler
+    form.classList.add("was-validated") // Trigger Bootstrap's validation styling
+    if (validateForm()) {
+      await handleSubmit()
+    }
   })
 
   // --- Calculate and set salary5y_year ---
@@ -18,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll('.form-control[type="text"]').forEach((input) => {
     input.addEventListener("input", function (e) {
       let value = e.target.value
-      value = value.replace(/[^0-9/]/g, "")
+      value = value.replace(/[^0-9/]/g, "") // Allow only digits and slashes
       const slashCount = (value.match(/\//g) || []).length
       if (slashCount > 2) {
         const lastSlashIndex = value.lastIndexOf("/")
@@ -46,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Calculate period in years between two dates (dd/mm/yyyy)
 function calculatePeriodInYears(startDateStr, endDateStr) {
+  if (!startDateStr || !endDateStr) return null // Handle null/empty
   const startDateParts = startDateStr.split("/")
   const endDateParts = endDateStr.split("/")
   const startDate = new Date(
@@ -128,11 +132,11 @@ function checkSalary5yCondition(salary5y_input, salary5y) {
   return true
 }
 
-// Pre-calculate highest ins_code_order for each pos_type and pos_lev
+// Get highest ins_code_order for each pos_type and pos_lev
 function getHighestOrders(data) {
   const highestOrders = {}
   data.decorData.forEach((item) => {
-    const key = item.pos_type + item.pos_lev // Combine pos_type and pos_lev
+    const key = item.pos_type + item.pos_lev
     if (!highestOrders[key] || item.ins_code_order > highestOrders[key]) {
       highestOrders[key] = item.ins_code_order
     }
@@ -161,7 +165,6 @@ async function fetchData() {
   } catch (error) {
     console.error("Error fetching data:", error)
     Swal.fire({
-      // Use SweetAlert2 for error
       icon: "error",
       title: "เกิดข้อผิดพลาด",
       text: "ไม่สามารถโหลดข้อมูลได้: " + error.message,
@@ -193,7 +196,7 @@ async function populateDropdowns() {
   })
 
   // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" ---
-  // Moved *inside* updateLastInsCode, so it's added/removed dynamically
+  // Moved *inside* updateLastInsCode
 
   // --- Hierarchy Logic (pos_type and pos_lev) ---
 
@@ -320,11 +323,11 @@ async function populateDropdowns() {
       decorationCodeSelect.remove(1)
     }
 
-    // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" here ---
-    const defaultOption = document.createElement("option")
-    defaultOption.value = "null" // Use actual null value
-    defaultOption.textContent = "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ"
-    decorationCodeSelect.appendChild(defaultOption)
+    // // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" here ---
+    // const defaultOption = document.createElement("option")
+    // defaultOption.value = "null" // Use actual null value
+    // defaultOption.textContent = "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ"
+    // decorationCodeSelect.appendChild(defaultOption)
 
     // Populate with filtered and sorted decorations
     uniqueDecorations.forEach((code) => {
@@ -358,6 +361,7 @@ function isValidDate(dateString) {
   if (day < 1 || day > 31) return false
   if (month < 1 || month > 12) return false
   if (year < 1000 || year > 9999) return false // Adjust
+  // Add more robust date checks here (e.g., leap year, days in month) if needed
 
   return true
 }
@@ -369,6 +373,80 @@ function resetForm() {
   // Reset selects to default state, triggering updates
   document.getElementById("personal_type").value = ""
   document.getElementById("personal_type").dispatchEvent(new Event("change")) // Trigger change
+  // Clear error messages
+  clearAllErrors()
+}
+// --- Clear All Error Messages ---
+function clearAllErrors() {
+  const errorDivs = document.querySelectorAll(".invalid-feedback")
+  errorDivs.forEach((div) => {
+    div.textContent = ""
+    div.style.display = "none"
+  })
+
+  // Remove the 'is-invalid' class from all form controls
+  const formControls = document.querySelectorAll(".form-control, .form-select")
+  formControls.forEach((control) => {
+    control.classList.remove("is-invalid")
+  })
+}
+// --- Validate Form ---
+function validateForm() {
+  let isValid = true
+  const form = document.getElementById("searchForm")
+
+  // --- Helper function to show error messages ---
+  function showError(inputElement, message) {
+    const errorDiv = document.getElementById(inputElement.id + "_error")
+    errorDiv.textContent = message
+    errorDiv.style.display = "block"
+    inputElement.classList.add("is-invalid")
+    isValid = false // Set overall validity to false
+  }
+
+  // --- Required Fields Check ---
+  const requiredFields = [
+    "personal_type",
+    "pos_type",
+    "pos_lev",
+    "beg_pos_date",
+    "salary",
+  ]
+  requiredFields.forEach((fieldId) => {
+    const inputElement = document.getElementById(fieldId)
+    // For select elements, we check against both "" (initial state) and "null" (for "never requested")
+    // For text/number inputs, an empty string is invalid
+    if (
+      !inputElement.value ||
+      inputElement.value.trim() === "" ||
+      inputElement.value === "null"
+    ) {
+      showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
+      isValid = false
+    }
+  })
+
+  // --- Date Validation (if provided) ---
+  const dateFields = ["beg_pos_date", "pos_lev_date", "last_ins_date"]
+  dateFields.forEach((fieldId) => {
+    const inputElement = document.getElementById(fieldId)
+    if (inputElement.value && !isValidDate(inputElement.value)) {
+      showError(inputElement, "กรุณากรอกวันที่ในรูปแบบ วว/ดด/ปปปป")
+      isValid = false
+    }
+  })
+
+  // --- Number Validation (if provided) ---
+  const numberFields = ["salary", "salary5y"]
+  numberFields.forEach((fieldId) => {
+    const inputElement = document.getElementById(fieldId)
+    if (inputElement.value && isNaN(parseFloat(inputElement.value))) {
+      showError(inputElement, "กรุณากรอกตัวเลขที่ถูกต้อง")
+      isValid = false
+    }
+  })
+
+  return isValid
 }
 
 // --- Main Calculation Function ---
@@ -480,18 +558,23 @@ async function calculateDecoration(formData) {
     ? parseInt(last_ins_date_input.split("/")[2], 10)
     : 0 // Safe check
 
-  if (filteredData.length > 0) {
-    const highestLevelItem = filteredData.find(
-      (item) => item.ins_code_highest_of_pos_lev === "highest"
-    )
-    if (highestLevelItem && lastInsYear + 1 >= currentYear) {
-      return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
-    }
+  // --- Highest Level Check (Simplified) ---
+  // We only need to check *one* item with ins_code_highest_of_pos_lev === "highest"
+  // for the selected pos_type and pos_lev.  No need to loop through all filteredData.
+  const highestLevelItem = data.decorData.find(
+    (item) =>
+      item.pos_type === pos_type_input &&
+      item.pos_lev === pos_lev_input &&
+      item.ins_code_highest_of_pos_lev === "highest"
+  )
 
-    // Check for consecutive year request *only if* not already at the highest level
-    if (!highestLevelItem && lastInsYear + 1 === currentYear) {
-      return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน"
-    }
+  if (highestLevelItem && lastInsYear + 1 >= currentYear) {
+    return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
+  }
+
+  // Check for consecutive year request *only if* not already at the highest level
+  if (!highestLevelItem && lastInsYear + 1 === currentYear) {
+    return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน"
   }
 
   // --- 3.6 Find Matching Decoration (Final Selection) ---
@@ -554,34 +637,6 @@ async function handleSubmit() {
         ? null
         : document.getElementById("last_ins_code").value || null, // Handle "null" string and empty
     last_ins_date_input: document.getElementById("last_ins_date").value || null,
-  }
-
-  // Basic Date Validation
-  if (
-    formData.beg_pos_date_input &&
-    !isValidDate(formData.beg_pos_date_input)
-  ) {
-    return Swal.fire("ข้อผิดพลาด", "วันที่บรรจุไม่ถูกต้อง", "error")
-  }
-  if (
-    formData.pos_lev_date_input &&
-    !isValidDate(formData.pos_lev_date_input)
-  ) {
-    return Swal.fire(
-      "ข้อผิดพลาด",
-      "วันที่เข้าสู่ระดับตำแหน่งปัจจุบันไม่ถูกต้อง",
-      "error"
-    )
-  }
-  if (
-    formData.last_ins_date_input &&
-    !isValidDate(formData.last_ins_date_input)
-  ) {
-    return Swal.fire(
-      "ข้อผิดพลาด",
-      "วันที่ได้รับเครื่องราชขั้นล่าสุด ไม่ถูกต้อง",
-      "error"
-    )
   }
 
   // Call calculateDecoration and display result with SweetAlert2
