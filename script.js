@@ -1,405 +1,604 @@
-// กำหนดตัวแปรเก็บข้อมูล JSON
-let jsonData = []
+document.addEventListener("DOMContentLoaded", function () {
+  // --- Form Submission ---
+  const form = document.getElementById("searchForm")
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault()
+    await handleSubmit() // Call the submit handler
+  })
 
-// โหลดข้อมูลจากไฟล์ decorationData.json และดึงข้อมูลจาก key "decorData"
-async function loadDecorationData() {
+  // --- Calculate and set salary5y_year ---
+  const currentYearBE = new Date().getFullYear() + 543
+  const fiveYearsAgoBE = currentYearBE - 5
+  document.getElementById("salary5y_year").textContent = fiveYearsAgoBE
+
+  // --- Populate dropdowns and set up hierarchy ---
+  populateDropdowns()
+
+  // --- Input Event Listener for Date Formatting ---
+  document.querySelectorAll('.form-control[type="text"]').forEach((input) => {
+    input.addEventListener("input", function (e) {
+      let value = e.target.value
+      value = value.replace(/[^0-9/]/g, "")
+      const slashCount = (value.match(/\//g) || []).length
+      if (slashCount > 2) {
+        const lastSlashIndex = value.lastIndexOf("/")
+        value = value.substring(0, lastSlashIndex)
+      }
+      const parts = value.split("/")
+      if (parts.length > 0 && parts[0].length > 2) {
+        parts[0] = parts[0].substring(0, 2) // Limit day
+      }
+      if (parts.length > 1 && parts[1].length > 2) {
+        parts[1] = parts[1].substring(0, 2) // Limit month
+      }
+      if (parts.length > 2 && parts[2].length > 4) {
+        parts[2] = parts[2].substring(0, 4) // Limit year
+      }
+      e.target.value = parts.join("/")
+    })
+  })
+
+  // --- Attach resetForm to reset button ---
+  document.getElementById("btnClearForm").addEventListener("click", resetForm)
+})
+
+// --- Helper Functions ---
+
+// Calculate period in years between two dates (dd/mm/yyyy)
+function calculatePeriodInYears(startDateStr, endDateStr) {
+  const startDateParts = startDateStr.split("/")
+  const endDateParts = endDateStr.split("/")
+  const startDate = new Date(
+    startDateParts[2],
+    startDateParts[1] - 1,
+    startDateParts[0]
+  )
+  const endDate = new Date(
+    endDateParts[2],
+    endDateParts[1] - 1,
+    endDateParts[0]
+  )
+
+  const diffInMilliseconds = endDate - startDate
+  const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)
+  return diffInYears
+}
+
+// Parse period string (e.g., ">=5,<10")
+function parsePeriod(periodStr) {
+  if (!periodStr) return { min: null, max: null }
+
+  let min = null
+  let max = null
+
+  const parts = periodStr.split(",")
+  parts.forEach((part) => {
+    const geMatch = part.match(/>=(\d+)/)
+    const leMatch = part.match(/<(\d+)/)
+
+    if (geMatch) {
+      min = parseInt(geMatch[1], 10)
+    }
+    if (leMatch) {
+      max = parseInt(leMatch[1], 10)
+    }
+  })
+  return { min, max }
+}
+
+// Check period conditions
+function checkBegPosPeriodCondition(beg_pos_period_input, beg_pos_period) {
+  if (!beg_pos_period) return true
+  return checkPeriodCondition(beg_pos_period_input, beg_pos_period)
+}
+
+function checkPosLevPeriodCondition(pos_lev_period_input, pos_lev_period) {
+  if (!pos_lev_period) return true
+  return checkPeriodCondition(pos_lev_period_input, pos_lev_period)
+}
+
+function checkLastInsPeriodCondition(last_ins_period_input, last_ins_period) {
+  if (!last_ins_period) return true
+  return checkPeriodCondition(last_ins_period_input, last_ins_period)
+}
+
+// Generic period condition checker
+function checkPeriodCondition(period_input, period_str) {
+  const { min, max } = parsePeriod(period_str)
+  if (min !== null && period_input < min) return false
+  if (max !== null && period_input >= max) return false
+  return true
+}
+
+// Check salary conditions
+function checkSalaryCondition(salary_input, salary) {
+  if (!salary) return true
+  const { min, max } = parsePeriod(salary)
+  if (min !== null && salary_input < min) return false
+  if (max !== null && salary_input >= max) return false
+  return true
+}
+
+function checkSalary5yCondition(salary5y_input, salary5y) {
+  if (!salary5y) return true
+
+  const { min, max } = parsePeriod(salary5y)
+  if (min !== null && salary5y_input < min) return false
+  if (max !== null && salary5y_input >= max) return false
+  return true
+}
+
+// Pre-calculate highest ins_code_order for each pos_type and pos_lev
+function getHighestOrders(data) {
+  const highestOrders = {}
+  data.decorData.forEach((item) => {
+    const key = item.pos_type + item.pos_lev // Combine pos_type and pos_lev
+    if (!highestOrders[key] || item.ins_code_order > highestOrders[key]) {
+      highestOrders[key] = item.ins_code_order
+    }
+  })
+  return highestOrders
+}
+
+// Get ins_code_order from ins_code_name_full (Lookup Table)
+function getInsCodeOrder(data, ins_code_name_full) {
+  if (!ins_code_name_full) return null
+  const item = data.decorData.find(
+    (item) => item.ins_code_name_full === ins_code_name_full
+  )
+  return item ? item.ins_code_order : null
+}
+
+// --- Fetch Data and Populate Dropdowns ---
+
+async function fetchData() {
   try {
     const response = await fetch("decorationData.json")
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const data = await response.json()
-    jsonData = data.decorData
-    initPersonalType()
-    updateSalary5YLabel()
-    initLastInsCode("", "", jsonData) // Initialize with empty strings, and pass jsonData
+    return await response.json()
   } catch (error) {
-    console.error("Error fetching decoration data:", error)
+    console.error("Error fetching data:", error)
     Swal.fire({
-      title: "ข้อผิดพลาด",
-      text: "ไม่สามารถโหลดข้อมูลได้",
+      // Use SweetAlert2 for error
       icon: "error",
-      confirmButtonText: "ตกลง",
+      title: "เกิดข้อผิดพลาด",
+      text: "ไม่สามารถโหลดข้อมูลได้: " + error.message,
     })
+    return null
   }
 }
 
-loadDecorationData()
+async function populateDropdowns() {
+  const data = await fetchData()
+  if (!data) return
 
-// ฟังก์ชันแปลงวันที่จากรูปแบบ dd/MM/yyyy (ที่เป็นปี พ.ศ.) ให้เป็น Date object (ปี ค.ศ.)
-function parseThaiDate(thaiDateStr) {
-  if (!thaiDateStr) return null
-  const parts = thaiDateStr.split("/")
-  if (parts.length !== 3) return null
-  const day = parseInt(parts[0], 10)
-  const month = parseInt(parts[1], 10) - 1 // Month is 0-indexed in JavaScript Date
-  const yearBE = parseInt(parts[2], 10)
-  const yearAD = yearBE - 543
-  return new Date(yearAD, month, day)
-}
-
-// ฟังก์ชันคำนวณจำนวนปีจากวันที่ (รับวันที่ในรูปแบบ dd/MM/yyyy ที่เป็น พ.ศ.)
-function calculateYears(thaiDateStr) {
-  const date = parseThaiDate(thaiDateStr)
-  if (!date) return 0
-  const now = new Date()
-  const diffMs = now - date
-  return diffMs / (1000 * 60 * 60 * 24 * 365.25)
-}
-
-// ฟังก์ชันคำนวณช่วงเวลา (เป็นปีทศนิยม) จาก startDateStr ถึง fixedDateStr (ทั้งคู่ในรูปแบบ dd/MM/yyyy ที่เป็น พ.ศ.)
-function calculatePeriod(startDateStr, fixedDateStr) {
-  const startDate = parseThaiDate(startDateStr)
-  const fixedDate = parseThaiDate(fixedDateStr)
-  if (!startDate || !fixedDate) return 0
-  const diffMs = fixedDate - startDate
-  return diffMs / (1000 * 60 * 60 * 24 * 365.25)
-}
-
-// ฟังก์ชันดึงปีจากวันที่ไทย (ในรูปแบบ dd/MM/yyyy พ.ศ.)
-function getThaiYear(dateStr) {
-  if (!dateStr) return null
-  const parts = dateStr.split("/")
-  if (parts.length !== 3) return null
-  return parseInt(parts[2], 10)
-}
-
-// ฟังก์ชันตรวจสอบเงื่อนไข (เช่น ">=5,<10") กับค่า value
-function checkCondition(value, conditionStr) {
-  if (!conditionStr) return true
-  const conditions = conditionStr.split(",")
-  return conditions.every((cond) => {
-    cond = cond.trim()
-    if (cond.startsWith(">=")) {
-      return value >= parseFloat(cond.slice(2))
-    } else if (cond.startsWith(">")) {
-      return value > parseFloat(cond.slice(1))
-    } else if (cond.startsWith("<=")) {
-      return value <= parseFloat(cond.slice(2))
-    } else if (cond.startsWith("<")) {
-      return value < parseFloat(cond.slice(1))
-    } else {
-      return value == parseFloat(cond)
-    }
-  })
-}
-
-// ฟังก์ชันเติมข้อมูลให้ dropdown โดยใช้ค่าที่ไม่ซ้ำ
-function populateDropdown(id, values) {
-  const select = document.getElementById(id)
-  select.innerHTML = `<option value="">เลือก${select.getAttribute(
-    "name"
-  )}</option>`
-  values.forEach((val) => {
-    const option = document.createElement("option")
-    option.value = val
-    option.textContent = val || "ไม่ระบุ"
-    select.appendChild(option)
-  })
-}
-
-// ฟังก์ชันเริ่มต้นเติมข้อมูลสำหรับ dropdown "ประเภทบุคลากร"
-function initPersonalType() {
-  const types = [...new Set(jsonData.map((item) => item.personal_type))]
   const personalTypeSelect = document.getElementById("personal_type")
-  populateDropdown("personal_type", types)
-}
+  const positionTypeSelect = document.getElementById("pos_type")
+  const positionLevelSelect = document.getElementById("pos_lev")
+  const decorationCodeSelect = document.getElementById("last_ins_code")
 
-// เมื่อเลือกประเภทบุคลากร ให้กรองข้อมูล dropdown "ประเภทตำแหน่ง"
-function updatePosType() {
-  const personalValue = document.getElementById("personal_type").value
-  const posTypeSelect = document.getElementById("pos_type")
-  const posLevSelect = document.getElementById("pos_lev")
-  const lastInsCodeSelect = document.getElementById("last_ins_code")
+  // --- Populate personal_type ---
+  const personalTypes = [
+    ...new Set(
+      data.decorData.map((item) => item.personal_type).filter(Boolean)
+    ),
+  ]
+  personalTypes.forEach((type) => {
+    const option = document.createElement("option")
+    option.value = type
+    option.textContent = type
+    personalTypeSelect.appendChild(option)
+  })
 
-  const filtered = jsonData.filter(
-    (item) => item.personal_type === personalValue
-  )
-  const posTypes = [...new Set(filtered.map((item) => item.pos_type))]
-  populateDropdown("pos_type", posTypes)
+  // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" ---
+  // Moved *inside* updateLastInsCode, so it's added/removed dynamically
 
-  // Clear and disable pos_lev AND last_ins_code
-  populateDropdown("pos_lev", []) // เคลียร์ dropdown สำหรับ "ระดับตำแหน่ง"
-  posLevSelect.value = "" // VERY IMPORTANT: Reset the selected value
+  // --- Hierarchy Logic (pos_type and pos_lev) ---
 
-  initLastInsCode("", "", null) // Clear last_ins_code
-  lastInsCodeSelect.value = ""
-}
+  function updatePosType() {
+    const selectedPersonalType = personalTypeSelect.value
 
-// เมื่อเลือกประเภทตำแหน่ง ให้กรองข้อมูล dropdown "ระดับตำแหน่ง"
-function updatePosLev() {
-  const personalValue = document.getElementById("personal_type").value
-  const posTypeValue = document.getElementById("pos_type").value
-  const posLevSelect = document.getElementById("pos_lev")
+    // Filter pos_type based on personal_type
+    const filteredPosTypes = data.decorData
+      .filter((item) => item.personal_type === selectedPersonalType)
+      .map((item) => item.pos_type)
+      .filter(Boolean) // Remove null
 
-  const filtered = jsonData.filter(
-    (item) =>
-      item.personal_type === personalValue && item.pos_type === posTypeValue
-  )
-  const posLevs = [...new Set(filtered.map((item) => item.pos_lev))]
-  populateDropdown("pos_lev", posLevs)
+    const uniquePosTypes = [...new Set(filteredPosTypes)] // Remove duplicates
 
-  // After populating pos_lev, update last_ins_code based on selected pos_type and pos_lev
-  initLastInsCode(posTypeValue, posLevSelect.value || "", jsonData) // Pass jsonData
-}
+    // Clear existing options (except the initial blank option)
+    while (positionTypeSelect.options.length > 1) {
+      positionTypeSelect.remove(1)
+    }
 
-// ฟังก์ชันอัพเดท label เงินเดือน 5 ปี ย้อนหลัง (คำนวณปี = พ.ศ. ปัจจุบัน - 5)
-function updateSalary5YLabel() {
-  const now = new Date()
-  const currentBuddhistYear = now.getFullYear() + 543
-  const targetYear = currentBuddhistYear - 5
-  document.getElementById("salary5y_year").textContent = targetYear
-}
-
-// ฟังก์ชันสำหรับเติมข้อมูล select "เครื่องราชชั้นล่าสุด"
-// ใช้ข้อมูล ins_code, ins_code_name และ ins_code_order จาก jsonData
-function initLastInsCode(posType, posLev, jsonDataValue) {
-  const insMap = new Map()
-  let filteredData = []
-
-  if (jsonDataValue) {
-    // Filter jsonData based on posType and posLev, handling empty strings
-    filteredData = jsonDataValue.filter((item) => {
-      return (
-        (posType === "" || item.pos_type === posType) &&
-        (posLev === "" || item.pos_lev === posLev)
+    // Add "ไม่ระบุ" option if applicable
+    if (
+      data.decorData.some(
+        (item) =>
+          item.personal_type === selectedPersonalType && item.pos_type === null
       )
+    ) {
+      const option = document.createElement("option")
+      option.value = "ไม่ระบุ"
+      option.textContent = "ไม่ระบุ"
+      positionTypeSelect.appendChild(option)
+    }
+
+    // Populate with filtered pos_types
+    uniquePosTypes.forEach((type) => {
+      const option = document.createElement("option")
+      option.value = type
+      option.textContent = type
+      positionTypeSelect.appendChild(option)
     })
 
-    // Find min and max ins_code_order *within the filtered data*
-    let minOrder = Infinity
-    let maxOrder = -Infinity
-
-    filteredData.forEach((item) => {
-      if (item.ins_code_order < minOrder) {
-        minOrder = item.ins_code_order
-      }
-      if (item.ins_code_order > maxOrder) {
-        maxOrder = item.ins_code_order
-      }
-    })
-
-    // Filter AGAIN, based on min/max order.
-    filteredData = filteredData.filter((item) => {
-      return item.ins_code_order >= minOrder && item.ins_code_order <= maxOrder
-    })
+    updatePosLev() // Trigger update of pos_lev
   }
 
-  insMap.clear() // Clear map before (re)populating
+  function updatePosLev() {
+    const selectedPersonalType = personalTypeSelect.value
+    const selectedPosType = positionTypeSelect.value
 
-  filteredData.forEach((item) => {
-    // Only add to the map if ins_code and ins_code_name exist and the code isn't already in the map
-    if (item.ins_code && item.ins_code_name && !insMap.has(item.ins_code)) {
-      insMap.set(item.ins_code, {
-        ins_code: item.ins_code,
-        ins_code_name: item.ins_code_name,
-        ins_code_order: item.ins_code_order,
-      })
-    }
-  })
-
-  const insArray = Array.from(insMap.values())
-  insArray.sort((a, b) => a.ins_code_order - b.ins_code_order) // Sort by ins_code_order
-
-  const select = document.getElementById("last_ins_code")
-  select.innerHTML = `<option value="">เลือกเครื่องราชชั้นล่าสุด (ถ้ามี)</option>` // Clear options
-  insArray.forEach((option) => {
-    const opt = document.createElement("option")
-    opt.value = option.ins_code // ins_code as value
-    opt.textContent = `${option.ins_code_name} (${option.ins_code})` // name (code) as text
-    select.appendChild(opt)
-  })
-}
-// ตั้งค่า event listener สำหรับ dropdown
-document
-  .getElementById("personal_type")
-  .addEventListener("change", updatePosType)
-document.getElementById("pos_type").addEventListener("change", updatePosLev)
-
-// เมื่อฟอร์มถูกส่ง ให้คำนวณเงื่อนไขและค้นหา record ที่ตรงกัน พร้อมแสดงผลด้วย SweetAlert2
-document
-  .getElementById("decorationForm")
-  .addEventListener("submit", function (e) {
-    e.preventDefault()
-
-    // รับค่าจากฟอร์ม (วันที่ในรูปแบบ dd/MM/yyyy ที่เป็น พ.ศ.)
-    const personalValue = document.getElementById("personal_type").value
-    const posTypeValue = document.getElementById("pos_type").value
-    const posLevValue = document.getElementById("pos_lev").value
-    let begPosDate = document.getElementById("beg_pos_date").value
-    let posLevDate = document.getElementById("pos_lev_date").value
-    const salaryInput = parseFloat(document.getElementById("salary").value) || 0
-    const salary5yInput =
-      parseFloat(document.getElementById("salary5y").value) || 0
-    const lastInsCodeForm = document.getElementById("last_ins_code").value // ค่านี้ถือเป็น last_ins_code จากฟอร์ม
-    let lastInsDate = document.getElementById("last_ins_date").value // Get last_ins_date
-
-    // Convert dates to Date objects using parseThaiDate
-    begPosDate = parseThaiDate(begPosDate)
-    posLevDate = parseThaiDate(posLevDate)
-    lastInsDate = parseThaiDate(lastInsDate)
-
-    // Validate that the selected last_ins_code is in the correct range
-    if (lastInsCodeForm) {
-      const validLastInsCode = jsonData.some(
+    // Filter pos_lev based on personal_type and pos_type
+    const filteredPosLevs = data.decorData
+      .filter(
         (item) =>
-          item.pos_type === posTypeValue &&
-          item.pos_lev === posLevValue &&
-          item.ins_code === lastInsCodeForm
+          item.personal_type === selectedPersonalType &&
+          (item.pos_type === selectedPosType ||
+            (item.pos_type === null && selectedPosType === "ไม่ระบุ"))
       )
-      if (!validLastInsCode) {
-        Swal.fire({
-          title: "ข้อผิดพลาด",
-          text: "เครื่องราชชั้นล่าสุดที่เลือกไม่ถูกต้องสำหรับประเภทตำแหน่งและระดับตำแหน่งที่เลือก",
-          icon: "error",
-          confirmButtonText: "ตกลง",
-        })
-        return
-      }
+      .map((item) => item.pos_lev)
+      .filter(Boolean) // Remove null and undefined
+
+    const uniquePosLevs = [...new Set(filteredPosLevs)]
+
+    // Clear existing options (except the initial blank option)
+    while (positionLevelSelect.options.length > 1) {
+      positionLevelSelect.remove(1)
     }
 
-    const now = new Date()
-    const currentBuddhistYear = now.getFullYear() + 543
-
-    // กำหนด fixed date สำหรับคำนวณช่วงเวลา
-    const fixedBegPosDate = `28/5/${currentBuddhistYear}` // สำหรับ beg_pos_period
-    const fixedPosLevDate = `28/5/${currentBuddhistYear}` // สำหรับ pos_lev_period
-    const fixedLastInsDate = `28/7/${currentBuddhistYear}` // สำหรับ last_ins_period
-
-    // คำนวณช่วงเวลาจากวันที่บรรจุ และวันที่เข้าสู่ระดับตำแหน่ง
-    const begPosPeriodInput = calculatePeriod(begPosDate, fixedBegPosDate)
-    const posLevPeriodInput = calculatePeriod(posLevDate, fixedPosLevDate)
-    const lastInsPeriodInput = calculatePeriod(lastInsDate, fixedLastInsDate)
-
-    // Early Qualification Check
+    // Add "ไม่ระบุ" option if applicable and not already present
     if (
-      personalValue === "ข้าราชการ" ||
-      personalValue === "ลูกจ้างประจำ" ||
-      personalValue === "พนักงานราชการ"
+      data.decorData.some(
+        (item) =>
+          item.personal_type === selectedPersonalType &&
+          item.pos_type === selectedPosType &&
+          item.pos_lev === null
+      )
     ) {
-      const minBegPosPeriod = jsonData
-        .filter((item) => item.personal_type === personalValue)
-        .map((item) => item.beg_pos_period)
-        .filter(Boolean) // Remove any empty/null conditions
-        .map((condition) => {
-          // Extract the minimum value from the condition string
-          // (This assumes the condition string is in a simple format like ">=5,<10")
-          const minValue = condition
-            .split(",")
-            .map((c) => c.trim())
-            .filter((c) => c.startsWith(">=") || c.startsWith(">"))
-            .map((c) => parseFloat(c.slice(c.startsWith(">=") ? 2 : 1)))[0] // Get the first valid minValue
-          return minValue === undefined ? Infinity : minValue // Return Infinity if no minimum value is found
-        })
-        .reduce((min, current) => Math.min(min, current), Infinity)
-
-      if (begPosPeriodInput < minBegPosPeriod) {
-        Swal.fire({
-          title: "ผลการตรวจสอบ",
-          text: "คุณสมบัติยังไม่ถึงเกณฑ์",
-          icon: "error",
-          confirmButtonText: "ตกลง",
-        })
-        return
-      }
+      const option = document.createElement("option")
+      option.value = "ไม่ระบุ"
+      option.textContent = "ไม่ระบุ"
+      positionLevelSelect.appendChild(option)
     }
 
-    // ตรวจสอบเงื่อนไข "ได้รับเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
-    const highestRecord = jsonData.find(
+    // Populate with filtered pos_levs
+    uniquePosLevs.forEach((level) => {
+      const option = document.createElement("option")
+      option.value = level
+      option.textContent = level
+      positionLevelSelect.appendChild(option)
+    })
+
+    updateLastInsCode() // Trigger update of last_ins_code
+  }
+
+  function updateLastInsCode() {
+    const selectedPosType = positionTypeSelect.value
+    const selectedPosLev = positionLevelSelect.value
+
+    // Get highest ins_code_order for the selected pos_lev
+    const highestOrders = getHighestOrders(data)
+    const highestOrder = highestOrders[selectedPosType + selectedPosLev] || 0 // Handle undefined
+
+    // Filter decorations based on pos_type (and pos_lev indirectly via highestOrder)
+    const filteredDecorations = data.decorData.filter(
       (item) =>
-        item.personal_type === personalValue &&
-        item.pos_lev === posLevValue &&
-        lastInsCodeForm &&
-        item.ins_code === lastInsCodeForm &&
-        item.ins_code_highest_of_pos_lev === "highest"
+        (item.pos_type === selectedPosType ||
+          (item.pos_type === null && selectedPosType === "ไม่ระบุ")) &&
+        item.ins_code_order <= highestOrder // Key change:  <= highestOrder
     )
 
-    if (highestRecord) {
-      Swal.fire({
-        title: "ผลการตรวจสอบ",
-        text: "ได้รับเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว",
-        icon: "warning",
-        confirmButtonText: "ตกลง",
-      })
-      return // หยุดการประมวลผล ไม่ดำเนินการเสนอเครื่องราชใหม่
+    // Get unique ins_code_name_full values and sort by ins_code_order
+    const uniqueDecorations = [
+      ...new Set(filteredDecorations.map((item) => item.ins_code_name_full)),
+    ]
+    uniqueDecorations.sort((a, b) => {
+      const orderA = filteredDecorations.find(
+        (item) => item.ins_code_name_full === a
+      )?.ins_code_order
+      const orderB = filteredDecorations.find(
+        (item) => item.ins_code_name_full === b
+      )?.ins_code_order
+      return (orderA || 0) - (orderB || 0) // Handle undefined order
+    })
+
+    // Clear existing options (except the default "never requested" option)
+    while (decorationCodeSelect.options.length > 1) {
+      decorationCodeSelect.remove(1)
     }
 
-    // ตรวจสอบเงื่อนไข "ปีติดกัน" สำหรับเครื่องราชฯ
-    if (lastInsDate) {
-      const lastInsYear = getThaiYear(lastInsDate)
-      if (lastInsYear !== null && lastInsYear + 1 === currentBuddhistYear) {
-        //do not return anything.
-        Swal.fire({
-          title: "ผลการตรวจสอบ",
-          text: "ไม่เสนอขอเครื่องราชฯ ในปีติดกัน",
-          icon: "error",
-          confirmButtonText: "ตกลง",
-        })
-        return
+    // --- Add "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ" here ---
+    const defaultOption = document.createElement("option")
+    defaultOption.value = "null" // Use actual null value
+    defaultOption.textContent = "ไม่เคยเสนอขอพระราชทานเครื่องราชฯ"
+    decorationCodeSelect.appendChild(defaultOption)
+
+    // Populate with filtered and sorted decorations
+    uniqueDecorations.forEach((code) => {
+      const option = document.createElement("option")
+      option.value = code
+      option.textContent = code
+      decorationCodeSelect.appendChild(option)
+    })
+  }
+
+  // --- Event Listeners for Hierarchy ---
+  personalTypeSelect.addEventListener("change", updatePosType)
+  positionTypeSelect.addEventListener("change", updatePosLev)
+  positionLevelSelect.addEventListener("change", updateLastInsCode)
+
+  // --- Initial Population ---
+  updatePosType() // Start cascading updates
+}
+
+// --- Date Validation Function ---
+function isValidDate(dateString) {
+  if (!dateString) return true // Allow empty
+  const parts = dateString.split("/")
+  if (parts.length !== 3) return false
+
+  const day = parseInt(parts[0], 10)
+  const month = parseInt(parts[1], 10)
+  const year = parseInt(parts[2], 10)
+
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return false
+  if (day < 1 || day > 31) return false
+  if (month < 1 || month > 12) return false
+  if (year < 1000 || year > 9999) return false // Adjust
+
+  return true
+}
+
+// --- Reset Form Function ---
+function resetForm() {
+  document.getElementById("searchForm").reset()
+
+  // Reset selects to default state, triggering updates
+  document.getElementById("personal_type").value = ""
+  document.getElementById("personal_type").dispatchEvent(new Event("change")) // Trigger change
+}
+
+// --- Main Calculation Function ---
+async function calculateDecoration(formData) {
+  const data = await fetchData()
+  if (!data) return null // fetchData handles error display
+
+  const {
+    personal_type_input,
+    pos_type_input,
+    pos_lev_input,
+    beg_pos_date_input,
+    pos_lev_date_input,
+    salary_input,
+    salary5y_input,
+    last_ins_code_name_full_input,
+    last_ins_date_input,
+  } = formData
+
+  const END_DATE_MAY = "28/05/" + (new Date().getFullYear() + 543)
+  const END_DATE_JULY = "28/07/" + (new Date().getFullYear() + 543)
+
+  // Calculate periods only if date inputs are provided
+  const beg_pos_period_input = beg_pos_date_input
+    ? calculatePeriodInYears(beg_pos_date_input, END_DATE_MAY)
+    : null
+  const pos_lev_period_input = pos_lev_date_input
+    ? calculatePeriodInYears(pos_lev_date_input, END_DATE_MAY)
+    : null
+  const last_ins_period_input = last_ins_date_input
+    ? calculatePeriodInYears(last_ins_date_input, END_DATE_JULY)
+    : null
+
+  const highestOrders = getHighestOrders(data)
+  const highestOrderOfPosLev =
+    highestOrders[pos_type_input + pos_lev_input] || 0
+
+  // --- Filter based on form input, only if the input is provided ---
+  let filteredData = data.decorData.filter((item) => {
+    // --- Basic matching (required fields) ---
+    if (personal_type_input && item.personal_type !== personal_type_input)
+      return false
+
+    if (
+      pos_type_input &&
+      !(
+        item.pos_type === pos_type_input ||
+        (item.pos_type === null && pos_type_input === "ไม่ระบุ")
+      )
+    )
+      return false
+
+    if (
+      pos_lev_input &&
+      !(
+        item.pos_lev === pos_lev_input ||
+        (item.pos_lev === null && pos_lev_input === "ไม่ระบุ")
+      )
+    )
+      return false
+
+    // --- Period and Salary checks (only if input is provided) ---
+    if (
+      beg_pos_date_input &&
+      !checkBegPosPeriodCondition(beg_pos_period_input, item.beg_pos_period)
+    )
+      return false
+    if (
+      pos_lev_date_input &&
+      !checkPosLevPeriodCondition(pos_lev_period_input, item.pos_lev_period)
+    )
+      return false
+    if (salary_input && !checkSalaryCondition(salary_input, item.salary))
+      return false
+    if (
+      salary5y_input &&
+      !checkSalary5yCondition(salary5y_input, item.salary5y)
+    )
+      return false
+    if (
+      last_ins_date_input &&
+      !checkLastInsPeriodCondition(last_ins_period_input, item.last_ins_period)
+    )
+      return false
+
+    // --- last_ins_code check (handle null/not selected) ---
+    const effectiveLastInsCode =
+      last_ins_code_name_full_input === "null" || !last_ins_code_name_full_input
+        ? null
+        : last_ins_code_name_full_input
+    if (item.last_ins_code && effectiveLastInsCode) {
+      const selectedLastInsOrder = getInsCodeOrder(data, effectiveLastInsCode)
+      if (selectedLastInsOrder === null) {
+        return false // Could be an error
+      }
+      // Find an item with same id and check ins_code
+      let findItemMatchId = data.decorData.find((i) => i.id === item.id)
+      if (findItemMatchId) {
+        if (item.last_ins_code !== findItemMatchId.ins_code) return false
       }
     }
 
-    // Query เงื่อนไขทั้งหมดเพื่อเสนอเครื่องราชฯ ใหม่
-    let matchedRecords = jsonData.filter((item) => {
+    return true // All checks passed for this item
+  })
+
+  // --- 3.4 & 3.5 Highest Level & Consecutive Year Check ---
+  const currentYear = new Date().getFullYear() + 543
+  const lastInsYear = last_ins_date_input
+    ? parseInt(last_ins_date_input.split("/")[2], 10)
+    : 0 // Safe check
+
+  if (filteredData.length > 0) {
+    const highestLevelItem = filteredData.find(
+      (item) => item.ins_code_highest_of_pos_lev === "highest"
+    )
+    if (highestLevelItem && lastInsYear + 1 >= currentYear) {
+      return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
+    }
+
+    // Check for consecutive year request *only if* not already at the highest level
+    if (!highestLevelItem && lastInsYear + 1 === currentYear) {
+      return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน"
+    }
+  }
+
+  // --- 3.6 Find Matching Decoration (Final Selection) ---
+  if (filteredData.length > 0) {
+    let selectedDecoration = null
+
+    // If "never requested" or no selection, find the *first* (lowest order) within the highest
+    if (
+      !last_ins_code_name_full_input ||
+      last_ins_code_name_full_input === "null"
+    ) {
+      selectedDecoration = filteredData.reduce((prev, current) => {
+        return prev.ins_code_order < current.ins_code_order &&
+          current.ins_code_order <= highestOrderOfPosLev
+          ? prev
+          : current
+      }, filteredData[0])
+    } else {
+      // If a previous decoration is selected, find the next higher ins_code_order
+      const lastInsOrder = getInsCodeOrder(data, last_ins_code_name_full_input)
+      selectedDecoration = filteredData.find(
+        (item) =>
+          item.ins_code_order > lastInsOrder &&
+          item.ins_code_order <= highestOrderOfPosLev
+      )
+    }
+
+    if (selectedDecoration) {
       return (
-        item.personal_type === personalValue &&
-        item.pos_type === posTypeValue &&
-        item.pos_lev === posLevValue &&
-        checkCondition(begPosPeriodInput, item.beg_pos_period) &&
-        checkCondition(posLevPeriodInput, item.pos_lev_period) &&
-        checkCondition(salaryInput, item.salary) &&
-        checkCondition(salary5yInput, item.salary5y) &&
-        checkCondition(lastInsPeriodInput, item.last_ins_period)
+        "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " +
+        selectedDecoration.ins_code_name_full
       )
-    })
-
-    // หากมีการระบุเครื่องราชฯ ที่ได้รับไปแล้ว (จากฟอร์ม last_ins_code)
-    // ต้องเลือกเฉพาะ record ที่มี ins_code_order สูงกว่าเครื่องราชฯ ก่อนหน้า
-    let lastReceivedOrder = null
-    if (lastInsCodeForm) {
-      const prevRecord = jsonData.find(
-        (item) => item.ins_code === lastInsCodeForm
-      )
-      if (prevRecord) {
-        lastReceivedOrder = prevRecord.ins_code_order
-      }
-      matchedRecords = matchedRecords.filter((item) => {
-        return (
-          lastReceivedOrder === null || item.ins_code_order > lastReceivedOrder
-        )
-      })
     }
+  }
 
-    // Check the highest award
-    // Need to know the highest award in this pos_lev
-    let highestAwardOfPosLev = null
-    matchedRecords.forEach((item) => {
-      if (item.ins_code_highest_of_pos_lev === "highest") {
-        highestAwardOfPosLev = item.ins_code_order
-      }
-    })
-    // If the highest award is less than new award, filter them
-    if (highestAwardOfPosLev) {
-      matchedRecords = matchedRecords.filter((item) => {
-        return item.ins_code_order <= highestAwardOfPosLev
-      })
-    }
+  // --- 3.7 No Match ---
+  return "คุณสมบัติยังไม่ถึงเกณฑ์"
+}
 
-    // หากพบ record ที่ตรงเงื่อนไข ให้เลือก record ที่มี order น้อยที่สุด (เรียงจากน้อยไปมาก)
-    if (matchedRecords.length > 0) {
-      matchedRecords.sort((a, b) => a.order - b.order)
+// --- Form Submission Handler ---
+async function handleSubmit() {
+  // Collect form data, handling null/empty values
+  const formData = {
+    personal_type_input: document.getElementById("personal_type").value || null,
+    pos_type_input:
+      document.getElementById("pos_type").value === "ไม่ระบุ"
+        ? null
+        : document.getElementById("pos_type").value || null,
+    pos_lev_input:
+      document.getElementById("pos_lev").value === "ไม่ระบุ"
+        ? null
+        : document.getElementById("pos_lev").value || null,
+    beg_pos_date_input: document.getElementById("beg_pos_date").value || null,
+    pos_lev_date_input: document.getElementById("pos_lev_date").value || null,
+    salary_input: parseFloat(document.getElementById("salary").value) || null,
+    salary5y_input:
+      parseFloat(document.getElementById("salary5y").value) || null,
+    last_ins_code_name_full_input:
+      document.getElementById("last_ins_code").value === "null"
+        ? null
+        : document.getElementById("last_ins_code").value || null, // Handle "null" string and empty
+    last_ins_date_input: document.getElementById("last_ins_date").value || null,
+  }
+
+  // Basic Date Validation
+  if (
+    formData.beg_pos_date_input &&
+    !isValidDate(formData.beg_pos_date_input)
+  ) {
+    return Swal.fire("ข้อผิดพลาด", "วันที่บรรจุไม่ถูกต้อง", "error")
+  }
+  if (
+    formData.pos_lev_date_input &&
+    !isValidDate(formData.pos_lev_date_input)
+  ) {
+    return Swal.fire(
+      "ข้อผิดพลาด",
+      "วันที่เข้าสู่ระดับตำแหน่งปัจจุบันไม่ถูกต้อง",
+      "error"
+    )
+  }
+  if (
+    formData.last_ins_date_input &&
+    !isValidDate(formData.last_ins_date_input)
+  ) {
+    return Swal.fire(
+      "ข้อผิดพลาด",
+      "วันที่ได้รับเครื่องราชขั้นล่าสุด ไม่ถูกต้อง",
+      "error"
+    )
+  }
+
+  // Call calculateDecoration and display result with SweetAlert2
+  const result = await calculateDecoration(formData)
+  if (result) {
+    if (result.startsWith("เครื่องราช")) {
       Swal.fire({
-        title: "ผลการตรวจสอบ",
-        text: "เครื่องราชฯ ที่เสนอขอ: " + matchedRecords[0].ins_code_name_full,
         icon: "success",
-        confirmButtonText: "ตกลง",
+        title: "ผลการตรวจสอบ",
+        text: result,
       })
     } else {
       Swal.fire({
+        icon: "info", // Use 'info' for other messages
         title: "ผลการตรวจสอบ",
-        text: "คุณสมบัติยังไม่ถึงเกณฑ์",
-        icon: "error",
-        confirmButtonText: "ตกลง",
+        text: result,
       })
     }
-  })
+  }
+}
