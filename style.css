@@ -90,45 +90,6 @@ body {
     margin-left: 0.5rem;
 }
 
-/* --- Media Query for Small Screens (Mobile) --- */
-@media (max-width: 576px) {
-
-    /* Form Hints on Mobile */
-    .form-hint {
-        display: block;
-        margin-left: 0;
-        margin-top: 0.25rem;
-    }
-
-    /* Buttons on Mobile */
-    .form-group.d-flex.justify-content-center {
-        padding-top: 1rem;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .form-group.d-flex.justify-content-center button {
-        min-width: 200px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 300px;
-        margin: 0.5rem 0;
-    }
-}
-
-/* --- Larger Screen Button Styles --- */
-@media (min-width: 577px) { /* Apply only on larger screens */
-    .form-group.d-flex.justify-content-center {
-        padding-top: 1rem;
-    }
-
-    .form-group.d-flex.justify-content-center button {
-        min-width: 200px;
-        margin: 0 0.5rem;
-        border-radius: 8px;
-    }
-}
-
 /* --- Error Messages --- */
 .invalid-feedback {
     display: none;
@@ -148,4 +109,103 @@ body {
 .was-validated .form-select:invalid {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+
+
+/* --- Mobile First Styles (max-width: 576px) --- */
+@media (max-width: 576px) {
+
+    /* 1. Buttons */
+    .d-flex.justify-content-center {
+        flex-direction: column; /* Stack buttons vertically */
+    }
+
+    .btn {
+        width: 100%; /* Full-width buttons */
+        margin-bottom: 0.5rem; /* Spacing between stacked buttons */
+        padding: 10px 15px;  /* Slightly smaller padding */
+        font-size: 1rem; /* Slightly smaller font-size */
+        /* Remove icons (optional, but good for very small screens): */
+        /* i { display: none; } */
+    }
+
+     /*Remove margin-right from all labels */
+    .form-label {
+      margin-right: 0;
+    }
+
+    /* Adjust padding/margin (optional, for better spacing):*/
+    .form-container {
+        padding: 1rem;
+    }
+
+    /* 2. Form elements */
+    .form-control,
+    .form-select {
+        width: 100%; /* Full-width form elements */
+        font-size: 0.9rem; /* Smaller font for inputs */
+        margin-bottom: 1rem; /* More spacing between elements */
+    }
+
+    .form-label {
+        margin-bottom: 0.3rem; /* Less margin above labels */
+        font-size: 0.9rem; /* Slightly smaller font size for labels */
+    }
+
+    /* Make sure input groups don't break */
+    .input-group {
+      margin-bottom: 1rem; /* Consistent spacing */
+    }
+    .input-group-text {
+        font-size: 0.9rem; /* Match input font size */
+    }
+
+
+    /* 3. General Layout */
+    .form-header {
+        padding: 15px; /* Less padding in header */
+        margin: -1rem -1rem 1rem -1rem; /* Adjust negative margins */
+    }
+    .form-header h3{
+      font-size: 1.5rem; /* Smaller heading */
+    }
+    .form-header h6 {
+        font-size: 0.9rem; /* Smaller sub-heading */
+    }
+
+    /* Form Hints on Mobile */
+    .form-hint {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.25rem;
+    }
+
+    /* --- Responsive adjustments for specific sections --- */
+    .row.g-4 {
+      --bs-gutter-x: 1rem; /* Reduce horizontal gutter */
+      --bs-gutter-y: 1rem; /* Reduce vertical gutter */
+    }
+
+     /* Force full-width columns in the form */
+     .row > div {
+        width: 100%;
+        padding-left: 0;    /* Remove default padding */
+        padding-right: 0;   /* Remove default padding */
+        margin-bottom: 0;  /* Remove any extra bottom margin */
+    }
+}
+
+
+/* --- Larger Screen Button Styles (optional, kept from original)--- */
+@media (min-width: 577px) {
+    .form-group.d-flex.justify-content-center {
+        padding-top: 1rem;
+    }
+
+    .form-group.d-flex.justify-content-center button {
+        min-width: 200px;
+        margin: 0 0.5rem;
+        border-radius: 8px;
+    }
 }
