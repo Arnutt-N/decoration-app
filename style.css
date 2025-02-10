@@ -1,150 +1,151 @@
 /* Import Google Font "Prompt" */
 @import url("https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap");
 
+/* --- General Styles --- */
 body {
-  font-family: "Prompt", sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-  min-height: 100vh;
+    font-family: "Prompt", sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    min-height: 100vh;
 }
 
 .form-container {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
 }
 
+/* --- Form Header --- */
 .form-header {
-  background: #1a73e8;
-  color: white;
-  border-radius: 15px 15px 0 0;
-  padding: 20px;
-  margin: -20px -20px 20px -20px; /* Adjusted to fit padding */
+    background: #1a73e8;
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    margin: -20px -20px 20px -20px;
 }
 
+/* --- Form Controls --- */
 .form-control,
 .form-select {
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  padding: 12px;
-  transition: all 0.3s;
-  font-family: "Prompt", sans-serif; /* Ensure consistent font */
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    transition: all 0.3s;
+    font-family: "Prompt", sans-serif;
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: #1a73e8;
-  box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
-  /* Remove the default focus outline */
-  outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
+    outline: none; /* Remove default focus outline */
 }
 
+/* --- Buttons --- */
 .btn-primary {
-  background: #1a73e8;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  transition: all 0.3s;
-  font-family: "Prompt", sans-serif; /* Ensure consistent font */
+    background: #1a73e8;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-family: "Prompt", sans-serif;
 }
 
 .btn-primary:hover {
-  background: #1557b0;
-  transform: translateY(-1px);
+    background: #1557b0;
+    transform: translateY(-1px);
 }
 
 .btn-danger {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-family: "Prompt", sans-serif; /* Ensure consistent font */
-}
-
-.form-label {
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 8px;
-  font-family: "Prompt", sans-serif; /* Ensure consistent font */
-  display: inline-block; /*  make label become inline-block */
-  margin-right: 0.5rem;
-}
-
-/* Required field indicator */
-.required-star {
-  color: red;
-}
-
-.input-group {
-  margin-bottom: 20px;
-}
-
-/* Style for the span inside the label, targeting by ID */
-#pos_lev_date,
-#last_ins_code,
-#last_ins_date,
-#salary5y_year_no {
-  font-size: 0.9rem; /* Smaller font size */
-  color: #6c757d; /* Lighter color (Bootstrap's "muted" color) */
-  font-weight: 400; /* Normal font weight */
-  margin-left: 0.5rem; /* Add some space to the left of the span */
-}
-
-/* Media query for small screens (mobile) */
-@media (max-width: 576px) {
-  /* Bootstrap's "sm" breakpoint */
-  /* Combine all spans into one selector  */
-  #pos_lev_date,
-  #last_ins_code,
-  #last_ins_date,
-  #salary5y_year_no {
-    display: block; /* Make the span a block-level element */
-    margin-left: 0; /* Remove the left margin */
-    margin-top: 0.25rem; /* Add some top margin for spacing */
-  }
-
-  /* Center align and add spacing between buttons */
-  .form-group.d-flex.justify-content-center {
-    padding-top: 1rem; /* Adjust as needed */
-    flex-direction: column; /* Stack buttons vertically */
-    align-items: center; /* Center buttons horizontally */
-  }
-
-  .form-group.d-flex.justify-content-center button {
-    min-width: 200px; /* Adjust as needed */
-    /* margin: 0 0.5rem;  Horizontal spacing - keep this for larger screens */
+    padding: 12px 24px;
     border-radius: 8px;
-    width: 90%; /* Make buttons wider on mobile */
-    max-width: 300px; /* But not too wide */
-    margin: 0.5rem 0;
-  }
+    font-family: "Prompt", sans-serif;
 }
 
-/* Larger screen */
-.form-group.d-flex.justify-content-center {
-  padding-top: 1rem;
+/* --- Labels --- */
+.form-label {
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 8px;
+    font-family: "Prompt", sans-serif;
+    display: inline-block;
+    margin-right: 0.5rem;
 }
-.form-group.d-flex.justify-content-center button {
-  min-width: 200px;
-  margin: 0 0.5rem;
-  border-radius: 8px;
+
+/* --- Required Field Indicator --- */
+.required-star {
+    color: red;
 }
-/* Style for error messages */
+
+/* --- Input Groups --- */
+.input-group {
+    margin-bottom: 20px;
+}
+
+/* --- Form Hints (smaller text below labels) --- */
+.form-hint {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 400;
+    margin-left: 0.5rem;
+}
+
+/* --- Media Query for Small Screens (Mobile) --- */
+@media (max-width: 576px) {
+
+    /* Form Hints on Mobile */
+    .form-hint {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.25rem;
+    }
+
+    /* Buttons on Mobile */
+    .form-group.d-flex.justify-content-center {
+        padding-top: 1rem;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-group.d-flex.justify-content-center button {
+        min-width: 200px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 300px;
+        margin: 0.5rem 0;
+    }
+}
+
+/* --- Larger Screen Button Styles --- */
+@media (min-width: 577px) { /* Apply only on larger screens */
+    .form-group.d-flex.justify-content-center {
+        padding-top: 1rem;
+    }
+
+    .form-group.d-flex.justify-content-center button {
+        min-width: 200px;
+        margin: 0 0.5rem;
+        border-radius: 8px;
+    }
+}
+
+/* --- Error Messages --- */
 .invalid-feedback {
-  display: none; /* Hide by default */
-  color: red;
-  font-size: 0.875em; /* Slightly smaller than default Bootstrap */
-  margin-top: 0.25rem; /* Add some space above the error */
+    display: none;
+    color: red;
+    font-size: 0.875em;
+    margin-top: 0.55rem;
 }
 
-/* Show error message when input is invalid AND form has been submitted */
-/* .was-validated is a class that we'll add to the form on submit */
+/* Show error (when .was-validated is present) */
 .was-validated .form-control:invalid ~ .invalid-feedback,
 .was-validated .form-select:invalid ~ .invalid-feedback {
-  display: block;
+    display: block;
 }
 
-/* Highlight invalid input fields */
+/* Highlight invalid fields (when .was-validated is present) */
 .was-validated .form-control:invalid,
 .was-validated .form-select:invalid {
-  border-color: #dc3545; /* Bootstrap's danger color */
-  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); /* Lighter red shadow */
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }

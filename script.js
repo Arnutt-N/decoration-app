@@ -3,23 +3,78 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("searchForm")
   form.addEventListener("submit", async function (event) {
     event.preventDefault()
-    // ตรวจสอบ last_ins_code ก่อนเพิ่ม was-validated
-    const lastInsCode = document.getElementById("last_ins_code")
-    if (
-      !lastInsCode.required ||
-      (lastInsCode.value && lastInsCode.value !== "null")
-    ) {
-      form.classList.add("was-validated") // Trigger Bootstrap's validation styling
-    }
-    if (validateForm()) {
-      await handleSubmit()
+    try {
+      // Validate form before proceeding
+      if (!validateForm()) {
+        return // Stop if validation fails
+      }
+
+      // Show loading state
+      const submitButton = form.querySelector('button[type="submit"]')
+      const originalText = submitButton.innerHTML
+      submitButton.disabled = true
+      submitButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin me-2"></i>กำลังประมวลผล...'
+
+      // Collect form data
+      const formData = {
+        personal_type_input:
+          document.getElementById("personal_type").value || null,
+        pos_type_input:
+          document.getElementById("pos_type").value === "ไม่ระบุ"
+            ? null
+            : document.getElementById("pos_type").value || null,
+        pos_lev_input:
+          document.getElementById("pos_lev").value === "ไม่ระบุ"
+            ? null
+            : document.getElementById("pos_lev").value || null,
+        beg_pos_date_input:
+          document.getElementById("beg_pos_date").value || null,
+        pos_lev_date_input:
+          document.getElementById("pos_lev_date").value || null,
+        salary_input:
+          parseFloat(document.getElementById("salary").value) || null,
+        salary5y_input:
+          parseFloat(document.getElementById("salary5y").value) || null,
+        last_ins_code_name_full_input:
+          document.getElementById("last_ins_code").value === "null"
+            ? null
+            : document.getElementById("last_ins_code").value || null,
+        last_ins_date_input:
+          document.getElementById("last_ins_date").value || null,
+      }
+
+      // Calculate decoration and show result
+      const result = await calculateDecoration(formData)
+      if (result) {
+        await Swal.fire({
+          icon: result.startsWith("เครื่องราช") ? "success" : "info",
+          title: "ผลการตรวจสอบ",
+          text: result,
+          confirmButtonText: "ตกลง",
+        })
+      }
+    } catch (error) {
+      console.error("Error:", error)
+      await Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "กรุณาลองใหม่อีกครั้ง",
+        confirmButtonText: "ตกลง",
+      })
+    } finally {
+      // Reset button state
+      const submitButton = form.querySelector('button[type="submit"]')
+      submitButton.disabled = false
+      submitButton.innerHTML =
+        '<i class="fas fa-search me-2"></i>ตรวจสอบเครื่องราชขั้นถัดไป'
     }
   })
 
   // --- Calculate and set salary5y_year ---
   const currentYearBE = new Date().getFullYear() + 543
   const fiveYearsAgoBE = currentYearBE - 5
-  document.getElementById("salary5y_year").textContent = fiveYearsAgoBE
+  document.getElementById("salary5y_year").textContent = currentYearBE
 
   // --- Populate dropdowns and set up hierarchy ---
   populateDropdowns()
@@ -52,26 +107,10 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("btnClearForm").addEventListener("click", resetForm)
 
   // --- Input Blur and Input Event Listeners (for immediate validation) ---
-  const specialPosLevs = [
-    "ชำนาญงาน",
-    "อาวุโส",
-    "ทักษะพิเศษ",
-    "ชำนาญการ",
-    "ชำนาญการพิเศษ",
-    "เชี่ยวชาญ",
-    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 13,000)",
-    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 15,600)",
-    "ต้น",
-    "สูง",
-    "สูง (เงิน ป.จ.ต. 14,500)",
-    "สูง (เงิน ป.จ.ต. 21,000)",
-    "สูง (เงิน ป.จ.ต. 21,000 - ปลัดกระทรวง)",
-  ]
   document.querySelectorAll(".form-control, .form-select").forEach((input) => {
     input.addEventListener("blur", function (event) {
       const form = document.getElementById("searchForm")
       const errorDiv = document.getElementById(input.id + "_error")
-      const selectedPosLev = document.getElementById("pos_lev").value
 
       if (input.required && !input.value) {
         form.classList.add("was-validated") // Trigger validation only if truly empty
@@ -82,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
           errorDiv.textContent = ""
           errorDiv.style.display = "none"
         }
+
         // Check other errors and potentially remove was-validated
         let hasErrors = false
         document
@@ -97,68 +137,24 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!hasErrors) {
           form.classList.remove("was-validated")
         }
-      } else if (
-        input.id === "pos_lev_date" &&
-        specialPosLevs.includes(selectedPosLev) &&
-        !input.value
-      ) {
-        // pos_lev_date blur, special pos_lev, and empty
-        input.classList.add("is-invalid")
-        if (errorDiv) {
-          errorDiv.textContent = "กรุณากรอกข้อมูลในช่องนี้"
-          errorDiv.style.display = "block"
-        }
-        form.classList.add("was-validated") // Add was-validated
-      } else if (
-        input.id === "pos_lev_date" &&
-        (!specialPosLevs.includes(selectedPosLev) || input.value)
-      ) {
-        // pos_lev_date blur, NOT special pos_lev OR has value
-        input.classList.remove("is-invalid")
-        if (errorDiv) {
-          errorDiv.textContent = ""
-          errorDiv.style.display = "none"
-        }
       }
     })
-
     input.addEventListener("input", function (event) {
       const form = document.getElementById("searchForm")
       const errorDiv = document.getElementById(input.id + "_error")
-      const selectedPosLev = document.getElementById("pos_lev").value
 
-      if (input.id === "pos_lev_date") {
-        if (specialPosLevs.includes(selectedPosLev) && input.value) {
-          // ถ้าเป็น pos_lev_date, เป็น special case, และมี value
-          input.classList.remove("is-invalid")
-          if (errorDiv) {
-            errorDiv.textContent = ""
-            errorDiv.style.display = "none"
-          }
-        } else if (specialPosLevs.includes(selectedPosLev) && !input.value) {
-          // ถ้าเป็น pos_lev_date, เป็น special case, และ *ไม่มี* value
-          input.classList.add("is-invalid")
-          if (errorDiv) {
-            errorDiv.textContent = "กรุณากรอกข้อมูลในช่องนี้"
-            errorDiv.style.display = "block"
-          }
-        } else if (!specialPosLevs.includes(selectedPosLev)) {
-          input.classList.remove("is-invalid")
-          if (errorDiv) {
-            errorDiv.textContent = ""
-            errorDiv.style.display = "none"
-          }
-        }
-      } else if (input.value) {
-        // กรณี input field อื่นๆ ที่ required
-
+      if (input.value) {
         input.classList.remove("is-invalid")
-        // ไม่ต้อง add/remove is-valid แล้ว
+        input.classList.add("is-valid")
+        setTimeout(() => {
+          input.classList.remove("is-valid")
+        }, 0)
 
         if (errorDiv) {
           errorDiv.textContent = ""
           errorDiv.style.display = "none"
         }
+
         let hasErrors = false
         document
           .querySelectorAll(".form-control[required], .form-select[required]")
@@ -170,6 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
               hasErrors = true
             }
           })
+
         if (!hasErrors) {
           form.classList.remove("was-validated")
         }
@@ -503,9 +500,6 @@ function resetForm() {
   // Reset last_ins_code as well
   document.getElementById("last_ins_code").value = "" // Set to default empty value.
   document.getElementById("last_ins_code").dispatchEvent(new Event("change")) // Trigger the change.
-  // Reset pos_lev
-  document.getElementById("pos_lev").value = ""
-  document.getElementById("pos_lev").dispatchEvent(new Event("change"))
 }
 // --- Clear All Error Messages ---
 function clearAllErrors() {
@@ -521,7 +515,6 @@ function clearAllErrors() {
     control.classList.remove("is-invalid")
   })
 }
-
 // --- Validate Form ---
 function validateForm() {
   let isValid = true
@@ -551,41 +544,25 @@ function validateForm() {
     // Special handling for last_ins_code (select element).
     if (fieldId === "last_ins_code") {
       if (!inputElement.value) {
-        showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
+        // เช็ค *เฉพาะ* empty string ("")
+        showError(
+          inputElement,
+          "กรุณาเลือกเครื่องราชขั้นล่าสุด หรือ 'ไม่เคยได้รับพระราชทานเครื่องราชฯ'"
+        )
         isValid = false
       }
     } else {
       // For other required fields (not last_ins_code).
-      if (!inputElement.value || inputElement.value.trim() === "") {
+      if (
+        !inputElement.value ||
+        inputElement.value.trim() === ""
+        // ไม่ต้องเช็ค null ตรงนี้ เพราะไม่ใช่ last_ins_code
+      ) {
         showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
         isValid = false
       }
     }
   })
-
-  // --- Conditional Required Check for pos_lev_date ---
-  const posLevDateInput = document.getElementById("pos_lev_date")
-  const selectedPosLev = document.getElementById("pos_lev").value
-  const specialPosLevs = [
-    "ชำนาญงาน",
-    "อาวุโส",
-    "ทักษะพิเศษ",
-    "ชำนาญการ",
-    "ชำนาญการพิเศษ",
-    "เชี่ยวชาญ",
-    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 13,000)",
-    "ทรงคุณวุฒิ (เงิน ป.จ.ต. 15,600)",
-    "ต้น",
-    "สูง",
-    "สูง (เงิน ป.จ.ต. 14,500)",
-    "สูง (เงิน ป.จ.ต. 21,000)",
-    "สูง (เงิน ป.จ.ต. 21,000 - ปลัดกระทรวง)",
-  ]
-
-  if (specialPosLevs.includes(selectedPosLev) && !posLevDateInput.value) {
-    showError(posLevDateInput, "กรุณากรอกข้อมูลในช่องนี้") // ใช้ showError()
-    isValid = false
-  }
 
   // --- Date Validation (if provided) ---
   const dateFields = ["beg_pos_date", "pos_lev_date", "last_ins_date"]
@@ -612,26 +589,101 @@ function validateForm() {
 
 // --- Main Calculation Function ---
 async function calculateDecoration(formData) {
+  console.log(
+    "Function calculateDecoration() is called with formData:",
+    formData
+  ) // <---- เพิ่ม Log นี้
+
   const data = await fetchData()
-  if (!data) return null // fetchData handles error display
+  if (!data) {
+    // fetchData handles error display, but check for null here too
+    console.log("fetchData() returned null, exiting calculateDecoration") // <---- เพิ่ม Log นี้
+    return null // Exit if data is null
+  }
+  console.log("fetchData() successful, data:", data) // <---- เพิ่ม Log นี้
 
   const {
     personal_type_input,
     pos_type_input,
     pos_lev_input,
+    last_ins_code_name_full_input,
+    last_ins_date_input,
     beg_pos_date_input,
     pos_lev_date_input,
     salary_input,
     salary5y_input,
+  } = formData
+
+  console.log("formData inputs extracted:", {
+    // <---- เพิ่ม Log นี้
+    personal_type_input,
+    pos_type_input,
+    pos_lev_input,
     last_ins_code_name_full_input,
     last_ins_date_input,
-  } = formData
+    beg_pos_date_input,
+    pos_lev_date_input,
+    salary_input,
+    salary5y_input,
+  })
+
+  // --- 1. ตรวจสอบเงื่อนไข "คุณสมบัติยังไม่ถึงเกณฑ์" (ระยะเวลาขั้นต่ำในการบรรจุ) ---
+  const selectedPersonalTypeData = data.decorData.find(
+    (item) => item.personal_type === personal_type_input
+  )
+  console.log("selectedPersonalTypeData after find:", selectedPersonalTypeData) // <---- เพิ่ม Log นี้
+  if (selectedPersonalTypeData) {
+    const begPosPeriodCondition = parsePeriod(
+      selectedPersonalTypeData.beg_pos_period
+    ).min
+    console.log("begPosPeriodCondition:", begPosPeriodCondition) // <---- เพิ่ม Log นี้
+    const beg_pos_period_input_years = beg_pos_date_input
+      ? calculatePeriodInYears(
+          beg_pos_date_input,
+          "28/05/" + (new Date().getFullYear() + 543)
+        )
+      : 0 // ใช้ค่าประมาณ
+    console.log("beg_pos_period_input_years:", beg_pos_period_input_years) // <---- เพิ่ม Log นี้
+    if (
+      begPosPeriodCondition &&
+      beg_pos_period_input_years < begPosPeriodCondition
+    ) {
+      console.log("Condition 'คุณสมบัติยังไม่ถึงเกณฑ์' (ระยะเวลาบรรจุ) is met") // <---- เพิ่ม Log นี้
+      return "คุณสมบัติยังไม่ถึงเกณฑ์"
+    }
+  }
+
+  // --- 2. ตรวจสอบเงื่อนไข "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด..." ---
+  if (
+    last_ins_code_name_full_input &&
+    last_ins_code_name_full_input !== "null"
+  ) {
+    const selectedLastInsCodeData = data.decorData.find(
+      (item) =>
+        item.personal_type === personal_type_input &&
+        item.pos_type === pos_type_input &&
+        item.pos_lev === pos_lev_input &&
+        item.ins_code_name_full === last_ins_code_name_full_input
+    )
+    console.log(
+      "selectedLastInsCodeData after find (highest level check):",
+      selectedLastInsCodeData
+    ) // <---- เพิ่ม Log นี้
+
+    if (
+      selectedLastInsCodeData &&
+      selectedLastInsCodeData.ins_code_highest_of_pos_lev === "highest"
+    ) {
+      console.log("Condition 'ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด...' is met") // <---- เพิ่ม Log นี้
+      return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
+    }
+  }
 
   const END_DATE_MAY = "28/05/" + (new Date().getFullYear() + 543)
   const END_DATE_JULY = "28/07/" + (new Date().getFullYear() + 543)
 
   // Calculate periods only if date inputs are provided
-  const beg_pos_period_input = beg_pos_date_input
+  const beg_pos_period_input_calc = beg_pos_date_input
     ? calculatePeriodInYears(beg_pos_date_input, END_DATE_MAY)
     : null
   const pos_lev_period_input = pos_lev_date_input
@@ -641,26 +693,18 @@ async function calculateDecoration(formData) {
     ? calculatePeriodInYears(last_ins_date_input, END_DATE_JULY)
     : null
 
+  console.log("Calculated periods:", {
+    // <---- เพิ่ม Log นี้
+    beg_pos_period_input_calc,
+    pos_lev_period_input,
+    last_ins_period_input,
+  })
+
   const highestOrders = getHighestOrders(data)
+  console.log("highestOrders:", highestOrders) // <---- เพิ่ม Log นี้
   const highestOrderOfPosLev =
     highestOrders[pos_type_input + pos_lev_input] || 0
-
-  // --- NEW: Special Condition for "ชำนาญการพิเศษ" ---
-  let specialDecoration = null
-  if (
-    personal_type_input === "ข้าราชการ" &&
-    pos_type_input === "วิชาการ" &&
-    pos_lev_input === "ชำนาญการพิเศษ" &&
-    pos_lev_period_input >= 3 &&
-    pos_lev_period_input < 5 &&
-    salary_input > 60000
-  ) {
-    // หา decoration ที่สูงกว่าปกติ 1 ขั้น
-    const nextOrder = (highestOrderOfPosLev || 0) + 1 // +1
-    specialDecoration = data.decorData.find(
-      (item) => item.ins_code_order === nextOrder
-    )
-  }
+  console.log("highestOrderOfPosLev:", highestOrderOfPosLev) // <---- เพิ่ม Log นี้
 
   // --- Filter based on form input, only if the input is provided ---
   let filteredData = data.decorData.filter((item) => {
@@ -686,29 +730,29 @@ async function calculateDecoration(formData) {
     )
       return false
 
-    // --- Period and Salary checks (only if input is provided) ---
-    if (
-      beg_pos_date_input &&
-      !checkBegPosPeriodCondition(beg_pos_period_input, item.beg_pos_period)
-    )
-      return false
-    if (
-      pos_lev_date_input &&
-      !checkPosLevPeriodCondition(pos_lev_period_input, item.pos_lev_period)
-    )
-      return false
-    if (salary_input && !checkSalaryCondition(salary_input, item.salary))
-      return false
-    if (
-      salary5y_input &&
-      !checkSalary5yCondition(salary5y_input, item.salary5y)
-    )
-      return false
-    if (
-      last_ins_date_input &&
-      !checkLastInsPeriodCondition(last_ins_period_input, item.last_ins_period)
-    )
-      return false
+    // --- Period and Salary checks (only if input is provided and JSON has value or JSON is null) ---
+
+    if (pos_lev_date_input && item.pos_lev_period != null) {
+      if (
+        !checkPosLevPeriodCondition(pos_lev_period_input, item.pos_lev_period)
+      )
+        return false
+    }
+    if (salary_input && item.salary != null) {
+      if (!checkSalaryCondition(salary_input, item.salary)) return false
+    }
+    if (salary5y_input && item.salary5y != null) {
+      if (!checkSalary5yCondition(salary5y_input, item.salary5y)) return false
+    }
+    if (last_ins_date_input && item.last_ins_period != null) {
+      if (
+        !checkLastInsPeriodCondition(
+          last_ins_period_input,
+          item.last_ins_period
+        )
+      )
+        return false
+    }
 
     // --- last_ins_code check (handle null/not selected) ---
     const effectiveLastInsCode =
@@ -729,6 +773,7 @@ async function calculateDecoration(formData) {
 
     return true // All checks passed for this item
   })
+  console.log("filteredData after filter:", filteredData) // <---- เพิ่ม Log นี้
 
   // --- 3.4 & 3.5 Highest Level & Consecutive Year Check ---
   const currentYear = new Date().getFullYear() + 543
@@ -736,22 +781,31 @@ async function calculateDecoration(formData) {
     ? parseInt(last_ins_date_input.split("/")[2], 10)
     : 0 // Safe check
 
-  // --- Highest Level Check (Simplified) ---
-  // We only need to check *one* item with ins_code_highest_of_pos_lev === "highest"
-  // for the selected pos_type and pos_lev.  No need to loop through all filteredData.
-  const highestLevelItem = data.decorData.find(
-    (item) =>
-      item.pos_type === pos_type_input &&
-      item.pos_lev === pos_lev_input &&
-      item.ins_code_highest_of_pos_lev === "highest"
-  )
+  // --- 3.4 Highest Level Check (Modified) ---
+  // Check if the *selected* last_ins_code is the highest level.
+  const isHighestLevel_LastInsCode =
+    last_ins_code_name_full_input !== "null" &&
+    data.decorData.some(
+      // เพิ่มเงื่อนไข last_ins_code_name_full_input !== "null"
+      (item) =>
+        item.ins_code_name_full === last_ins_code_name_full_input &&
+        item.ins_code_highest_of_pos_lev === "highest"
+    )
+  console.log("isHighestLevel_LastInsCode:", isHighestLevel_LastInsCode) // <---- เพิ่ม Log นี้
 
-  if (highestLevelItem && lastInsYear + 1 >= currentYear) {
+  if (isHighestLevel_LastInsCode) {
+    // เปลี่ยนมาใช้ isHighestLevel_LastInsCode
+    console.log(
+      "Condition 'ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด...' (section 3.4) is met"
+    ) // <---- เพิ่ม Log นี้
     return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
   }
 
-  // Check for consecutive year request *only if* not already at the highest level
-  if (!highestLevelItem && lastInsYear + 1 === currentYear) {
+  // --- 3.5 Consecutive Year Check (Conditional - Modified) ---
+  // Check for consecutive year *only if not highest level*.
+  if (!isHighestLevel_LastInsCode && lastInsYear === currentYear) {
+    // เปลี่ยนมาใช้ !isHighestLevel_LastInsCode และเงื่อนไขปีติดกัน
+    console.log("Condition 'ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน' is met") // <---- เพิ่ม Log นี้
     return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน"
   }
 
@@ -759,11 +813,8 @@ async function calculateDecoration(formData) {
   if (filteredData.length > 0) {
     let selectedDecoration = null
 
-    // *** Check for specialDecoration first ***
-    if (specialDecoration) {
-      selectedDecoration = specialDecoration
-    } else if (
-      //  ใช้ else if
+    // If "never requested" or no selection, find the *first* (lowest order) within the highest
+    if (
       !last_ins_code_name_full_input ||
       last_ins_code_name_full_input === "null"
     ) {
@@ -782,8 +833,13 @@ async function calculateDecoration(formData) {
           item.ins_code_order <= highestOrderOfPosLev
       )
     }
+    console.log("selectedDecoration after final selection:", selectedDecoration) // <---- เพิ่ม Log นี้
 
     if (selectedDecoration) {
+      console.log(
+        "Returning decoration:",
+        selectedDecoration.ins_code_name_full
+      ) // <---- เพิ่ม Log นี้
       return (
         "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " +
         selectedDecoration.ins_code_name_full
@@ -792,16 +848,12 @@ async function calculateDecoration(formData) {
   }
 
   // --- 3.7 No Match ---
-  return "คุณสมบัติยังไม่ถึงเกณฑ์"
+  console.log("Returning 'คุณสมบัติยังไม่ถึงเกณฑ์ หรือตรวจสอบข้อมูลอีกครั้ง'") // <---- เพิ่ม Log นี้
+  return "คุณสมบัติยังไม่ถึงเกณฑ์ หรือตรวจสอบข้อมูลอีกครั้ง" // เปลี่ยนข้อความผลลัพธ์
 }
 
 // --- Form Submission Handler ---
 async function handleSubmit() {
-  // **เพิ่ม:** เรียก validateForm() และตรวจสอบผลลัพธ์
-  if (!validateForm()) {
-    return // ถ้า validation ไม่ผ่าน ไม่ต้องทำอะไรต่อ
-  }
-
   // Collect form data, handling null/empty values
   const formData = {
     personal_type_input: document.getElementById("personal_type").value || null,
@@ -828,18 +880,10 @@ async function handleSubmit() {
   // Call calculateDecoration and display result with SweetAlert2
   const result = await calculateDecoration(formData)
   if (result) {
-    if (result.startsWith("เครื่องราช")) {
-      Swal.fire({
-        icon: "success",
-        title: "ผลการตรวจสอบ",
-        text: result,
-      })
-    } else {
-      Swal.fire({
-        icon: "info", // Use 'info' for other messages
-        title: "ผลการตรวจสอบ",
-        text: result,
-      })
-    }
+    Swal.fire({
+      icon: result.startsWith("เครื่องราช") ? "success" : "info",
+      title: "ผลการตรวจสอบ",
+      text: result,
+    })
   }
 }
