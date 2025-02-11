@@ -589,18 +589,10 @@ function validateForm() {
 
 // --- Main Calculation Function ---
 async function calculateDecoration(formData) {
-  console.log(
-    "Function calculateDecoration() is called with formData:",
-    formData
-  ) // <---- เพิ่ม Log นี้
-
   const data = await fetchData()
   if (!data) {
-    // fetchData handles error display, but check for null here too
-    console.log("fetchData() returned null, exiting calculateDecoration") // <---- เพิ่ม Log นี้
-    return null // Exit if data is null
+    return null
   }
-  console.log("fetchData() successful, data:", data) // <---- เพิ่ม Log นี้
 
   const {
     personal_type_input,
@@ -614,46 +606,38 @@ async function calculateDecoration(formData) {
     salary5y_input,
   } = formData
 
-  console.log("formData inputs extracted:", {
-    // <---- เพิ่ม Log นี้
-    personal_type_input,
-    pos_type_input,
-    pos_lev_input,
-    last_ins_code_name_full_input,
-    last_ins_date_input,
-    beg_pos_date_input,
-    pos_lev_date_input,
-    salary_input,
-    salary5y_input,
-  })
+  console.log("formData:", formData) // Log all input
 
-  // --- 1. ตรวจสอบเงื่อนไข "คุณสมบัติยังไม่ถึงเกณฑ์" (ระยะเวลาขั้นต่ำในการบรรจุ) ---
-  const selectedPersonalTypeData = data.decorData.find(
-    (item) => item.personal_type === personal_type_input
+  // --- 1. Early Exit: "คุณสมบัติยังไม่ถึงเกณฑ์" ---
+  const relevantItem = data.decorData.find(
+    (item) =>
+      item.personal_type === personal_type_input &&
+      (item.pos_type === pos_type_input ||
+        (item.pos_type === null && pos_type_input === "ไม่ระบุ")) &&
+      (item.pos_lev === pos_lev_input ||
+        (item.pos_lev === null && pos_lev_input === "ไม่ระบุ"))
   )
-  console.log("selectedPersonalTypeData after find:", selectedPersonalTypeData) // <---- เพิ่ม Log นี้
-  if (selectedPersonalTypeData) {
-    const begPosPeriodCondition = parsePeriod(
-      selectedPersonalTypeData.beg_pos_period
-    ).min
-    console.log("begPosPeriodCondition:", begPosPeriodCondition) // <---- เพิ่ม Log นี้
-    const beg_pos_period_input_years = beg_pos_date_input
-      ? calculatePeriodInYears(
-          beg_pos_date_input,
-          "28/05/" + (new Date().getFullYear() + 543)
-        )
-      : 0 // ใช้ค่าประมาณ
-    console.log("beg_pos_period_input_years:", beg_pos_period_input_years) // <---- เพิ่ม Log นี้
-    if (
-      begPosPeriodCondition &&
-      beg_pos_period_input_years < begPosPeriodCondition
-    ) {
-      console.log("Condition 'คุณสมบัติยังไม่ถึงเกณฑ์' (ระยะเวลาบรรจุ) is met") // <---- เพิ่ม Log นี้
-      return "คุณสมบัติยังไม่ถึงเกณฑ์"
+
+  let minBegPosPeriod = 5
+  if (relevantItem) {
+    const specificMinPeriod = parsePeriod(relevantItem.beg_pos_period).min
+    if (specificMinPeriod !== null) {
+      minBegPosPeriod = specificMinPeriod
     }
   }
 
-  // --- 2. ตรวจสอบเงื่อนไข "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด..." ---
+  const begPosPeriodYears = beg_pos_date_input
+    ? calculatePeriodInYears(
+        beg_pos_date_input,
+        "28/05/" + (new Date().getFullYear() + 543)
+      )
+    : 0
+  if (begPosPeriodYears < minBegPosPeriod) {
+    console.log("Early exit: Service duration not met") // Indicate early exit
+    return "คุณสมบัติยังไม่ถึงเกณฑ์"
+  }
+
+  // --- 2. Early Exit: "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด..." ---
   if (
     last_ins_code_name_full_input &&
     last_ins_code_name_full_input !== "null"
@@ -661,28 +645,26 @@ async function calculateDecoration(formData) {
     const selectedLastInsCodeData = data.decorData.find(
       (item) =>
         item.personal_type === personal_type_input &&
-        item.pos_type === pos_type_input &&
-        item.pos_lev === pos_lev_input &&
+        (item.pos_type === pos_type_input ||
+          (item.pos_type === null && pos_type_input === "ไม่ระบุ")) &&
+        (item.pos_lev === pos_lev_input ||
+          (item.pos_lev === null && pos_lev_input === "ไม่ระบุ")) &&
         item.ins_code_name_full === last_ins_code_name_full_input
     )
-    console.log(
-      "selectedLastInsCodeData after find (highest level check):",
-      selectedLastInsCodeData
-    ) // <---- เพิ่ม Log นี้
 
     if (
       selectedLastInsCodeData &&
       selectedLastInsCodeData.ins_code_highest_of_pos_lev === "highest"
     ) {
-      console.log("Condition 'ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด...' is met") // <---- เพิ่ม Log นี้
+      console.log("Early exit: Highest decoration already received") // Indicate early exit
       return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
     }
   }
 
+  // --- 3. Calculate Dates and Periods ---
   const END_DATE_MAY = "28/05/" + (new Date().getFullYear() + 543)
   const END_DATE_JULY = "28/07/" + (new Date().getFullYear() + 543)
 
-  // Calculate periods only if date inputs are provided
   const beg_pos_period_input_calc = beg_pos_date_input
     ? calculatePeriodInYears(beg_pos_date_input, END_DATE_MAY)
     : null
@@ -693,131 +675,169 @@ async function calculateDecoration(formData) {
     ? calculatePeriodInYears(last_ins_date_input, END_DATE_JULY)
     : null
 
-  console.log("Calculated periods:", {
-    // <---- เพิ่ม Log นี้
-    beg_pos_period_input_calc,
-    pos_lev_period_input,
-    last_ins_period_input,
-  })
-
+  // --- 4. Get Highest Possible Order ---
   const highestOrders = getHighestOrders(data)
-  console.log("highestOrders:", highestOrders) // <---- เพิ่ม Log นี้
   const highestOrderOfPosLev =
     highestOrders[pos_type_input + pos_lev_input] || 0
-  console.log("highestOrderOfPosLev:", highestOrderOfPosLev) // <---- เพิ่ม Log นี้
 
-  // --- Filter based on form input, only if the input is provided ---
+  // --- 5. Consecutive Year Check ---
+  if (last_ins_date_input) {
+    const currentYear = new Date().getFullYear() + 543
+    const lastInsYear = parseInt(last_ins_date_input.split("/")[2], 10)
+    if (lastInsYear + 1 === currentYear) {
+      console.log("Early exit: Consecutive year request") // Indicate early exit
+      return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน"
+    }
+  }
+
+  // --- 6. Filter Data ---
+  console.log("Before filter:", data.decorData.length)
   let filteredData = data.decorData.filter((item) => {
+    console.log("--- Evaluating item.id:", item.id, "---") // Log item.id
+
     // --- Basic matching (required fields) ---
-    if (personal_type_input && item.personal_type !== personal_type_input)
-      return false
-
-    if (
-      pos_type_input &&
-      !(
-        item.pos_type === pos_type_input ||
-        (item.pos_type === null && pos_type_input === "ไม่ระบุ")
-      )
-    )
-      return false
-
-    if (
-      pos_lev_input &&
-      !(
-        item.pos_lev === pos_lev_input ||
-        (item.pos_lev === null && pos_lev_input === "ไม่ระบุ")
-      )
-    )
-      return false
-
-    // --- Period and Salary checks (only if input is provided and JSON has value or JSON is null) ---
-
-    if (pos_lev_date_input && item.pos_lev_period != null) {
-      if (
-        !checkPosLevPeriodCondition(pos_lev_period_input, item.pos_lev_period)
-      )
-        return false
-    }
-    if (salary_input && item.salary != null) {
-      if (!checkSalaryCondition(salary_input, item.salary)) return false
-    }
-    if (salary5y_input && item.salary5y != null) {
-      if (!checkSalary5yCondition(salary5y_input, item.salary5y)) return false
-    }
-    if (last_ins_date_input && item.last_ins_period != null) {
-      if (
-        !checkLastInsPeriodCondition(
-          last_ins_period_input,
-          item.last_ins_period
-        )
-      )
-        return false
-    }
-
-    // --- last_ins_code check (handle null/not selected) ---
-    const effectiveLastInsCode =
-      last_ins_code_name_full_input === "null" || !last_ins_code_name_full_input
-        ? null
-        : last_ins_code_name_full_input
-    if (item.last_ins_code && effectiveLastInsCode) {
-      const selectedLastInsOrder = getInsCodeOrder(data, effectiveLastInsCode)
-      if (selectedLastInsOrder === null) {
-        return false // Could be an error
-      }
-      // Find an item with same id and check ins_code
-      let findItemMatchId = data.decorData.find((i) => i.id === item.id)
-      if (findItemMatchId) {
-        if (item.last_ins_code !== findItemMatchId.ins_code) return false
-      }
-    }
-
-    return true // All checks passed for this item
-  })
-  console.log("filteredData after filter:", filteredData) // <---- เพิ่ม Log นี้
-
-  // --- 3.4 & 3.5 Highest Level & Consecutive Year Check ---
-  const currentYear = new Date().getFullYear() + 543
-  const lastInsYear = last_ins_date_input
-    ? parseInt(last_ins_date_input.split("/")[2], 10)
-    : 0 // Safe check
-
-  // --- 3.4 Highest Level Check (Modified) ---
-  // Check if the *selected* last_ins_code is the highest level.
-  const isHighestLevel_LastInsCode =
-    last_ins_code_name_full_input !== "null" &&
-    data.decorData.some(
-      // เพิ่มเงื่อนไข last_ins_code_name_full_input !== "null"
-      (item) =>
-        item.ins_code_name_full === last_ins_code_name_full_input &&
-        item.ins_code_highest_of_pos_lev === "highest"
-    )
-  console.log("isHighestLevel_LastInsCode:", isHighestLevel_LastInsCode) // <---- เพิ่ม Log นี้
-
-  if (isHighestLevel_LastInsCode) {
-    // เปลี่ยนมาใช้ isHighestLevel_LastInsCode
     console.log(
-      "Condition 'ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด...' (section 3.4) is met"
-    ) // <---- เพิ่ม Log นี้
-    return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว"
-  }
+      "  Comparing personal_type:",
+      item.personal_type,
+      personal_type_input,
+      item.personal_type === personal_type_input
+    )
+    if (item.personal_type !== personal_type_input) {
+      console.log("  Failed: personal_type")
+      return false
+    }
 
-  // --- 3.5 Consecutive Year Check (Conditional - Modified) ---
-  // Check for consecutive year *only if not highest level*.
-  if (!isHighestLevel_LastInsCode && lastInsYear === currentYear) {
-    // เปลี่ยนมาใช้ !isHighestLevel_LastInsCode และเงื่อนไขปีติดกัน
-    console.log("Condition 'ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน' is met") // <---- เพิ่ม Log นี้
-    return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน"
-  }
+    console.log(
+      "  Comparing pos_type:",
+      item.pos_type,
+      pos_type_input,
+      item.pos_type === pos_type_input ||
+        (item.pos_type === null && pos_type_input === "ไม่ระบุ")
+    )
+    if (pos_type_input !== null && item.pos_type !== pos_type_input) {
+      console.log("  Failed: pos_type (not null)")
+      return false
+    }
+    if (pos_type_input === null && item.pos_type !== null) {
+      console.log("  Failed: pos_type (is null)")
+      return false
+    }
 
-  // --- 3.6 Find Matching Decoration (Final Selection) ---
+    console.log(
+      "  Comparing pos_lev:",
+      item.pos_lev,
+      pos_lev_input,
+      item.pos_lev === pos_lev_input ||
+        (item.pos_lev === null && pos_lev_input === "ไม่ระบุ")
+    )
+    if (pos_lev_input !== null && item.pos_lev !== pos_lev_input) {
+      console.log("  Failed: pos_lev (not null)")
+      return false
+    }
+    if (pos_lev_input === null && item.pos_lev !== null) {
+      console.log("  Failed: pos_lev (is null)")
+      return false
+    }
+
+    // --- Period and Salary checks (ONLY if the JSON field has a value) ---
+    console.log(
+      "  Checking pos_lev_period:",
+      item.pos_lev_period,
+      pos_lev_period_input
+    )
+    if (
+      item.pos_lev_period &&
+      !checkPosLevPeriodCondition(pos_lev_period_input, item.pos_lev_period)
+    ) {
+      console.log("  Failed: pos_lev_period")
+      return false
+    }
+
+    console.log("  Checking salary:", item.salary, salary_input)
+    if (item.salary && !checkSalaryCondition(salary_input, item.salary)) {
+      console.log("  Failed: salary")
+      return false
+    }
+
+    console.log("  Checking salary5y:", item.salary5y, salary5y_input)
+    if (
+      item.salary5y &&
+      !checkSalary5yCondition(salary5y_input, item.salary5y)
+    ) {
+      console.log("  Failed: salary5y")
+      return false
+    }
+
+    console.log(
+      "  Checking last_ins_period:",
+      item.last_ins_period,
+      last_ins_period_input
+    )
+    if (
+      item.last_ins_period &&
+      !checkLastInsPeriodCondition(last_ins_period_input, item.last_ins_period)
+    ) {
+      console.log("  Failed: last_ins_period")
+      return false
+    }
+
+    // --- last_ins_code check (handle null and matching both code and name) ---
+    console.log(
+      "  Checking last_ins_code:",
+      item.last_ins_code,
+      last_ins_code_name_full_input
+    )
+    if (
+      last_ins_code_name_full_input === "null" ||
+      !last_ins_code_name_full_input
+    ) {
+      if (
+        item.last_ins_code !== null ||
+        item.last_ins_code_name_full !== null
+      ) {
+        console.log("  Failed: last_ins_code (null case)")
+        return false
+      }
+    } else {
+      const selectedLastInsOrder = getInsCodeOrder(
+        data,
+        last_ins_code_name_full_input
+      )
+      if (selectedLastInsOrder === null) {
+        console.log("  Failed: last_ins_code (invalid order)")
+        return false
+      }
+
+      if (
+        item.last_ins_code !==
+        data.decorData.find(
+          (i) => i.ins_code_name_full === last_ins_code_name_full_input
+        )?.ins_code
+      ) {
+        console.log("  Failed: last_ins_code (code mismatch)")
+        return false
+      }
+      if (item.ins_code_name_full !== last_ins_code_name_full_input) {
+        console.log("  Failed: last_ins_code (name mismatch)")
+        return false
+      }
+    }
+
+    console.log("  Passed all checks") // Indicate that the item passed
+    return true
+  })
+
+  console.log("After filter:", filteredData.length)
+
+  // --- 7. Find Matching Decoration (Final Selection) ---
+  let selectedDecoration = null
+
   if (filteredData.length > 0) {
-    let selectedDecoration = null
-
-    // If "never requested" or no selection, find the *first* (lowest order) within the highest
     if (
       !last_ins_code_name_full_input ||
       last_ins_code_name_full_input === "null"
     ) {
+      // Never requested
       selectedDecoration = filteredData.reduce((prev, current) => {
         return prev.ins_code_order < current.ins_code_order &&
           current.ins_code_order <= highestOrderOfPosLev
@@ -825,7 +845,7 @@ async function calculateDecoration(formData) {
           : current
       }, filteredData[0])
     } else {
-      // If a previous decoration is selected, find the next higher ins_code_order
+      // Previous decoration
       const lastInsOrder = getInsCodeOrder(data, last_ins_code_name_full_input)
       selectedDecoration = filteredData.find(
         (item) =>
@@ -833,23 +853,16 @@ async function calculateDecoration(formData) {
           item.ins_code_order <= highestOrderOfPosLev
       )
     }
-    console.log("selectedDecoration after final selection:", selectedDecoration) // <---- เพิ่ม Log นี้
-
-    if (selectedDecoration) {
-      console.log(
-        "Returning decoration:",
-        selectedDecoration.ins_code_name_full
-      ) // <---- เพิ่ม Log นี้
-      return (
-        "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " +
-        selectedDecoration.ins_code_name_full
-      )
-    }
   }
 
-  // --- 3.7 No Match ---
-  console.log("Returning 'คุณสมบัติยังไม่ถึงเกณฑ์ หรือตรวจสอบข้อมูลอีกครั้ง'") // <---- เพิ่ม Log นี้
-  return "คุณสมบัติยังไม่ถึงเกณฑ์ หรือตรวจสอบข้อมูลอีกครั้ง" // เปลี่ยนข้อความผลลัพธ์
+  // --- 8. Return Result ---
+  if (selectedDecoration) {
+    return (
+      "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " + selectedDecoration.ins_code_name_full
+    )
+  } else {
+    return "คุณสมบัติยังไม่ถึงเกณฑ์ หรือตรวจสอบข้อมูลอีกครั้ง"
+  }
 }
 
 // --- Form Submission Handler ---

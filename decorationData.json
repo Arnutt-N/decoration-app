@@ -965,7 +965,7 @@
             "schedule_no": 25,
             "order": 1,
             "personal_type": "ลูกจ้างประจำ",
-            "pos_type": "ไม่ระบุ",
+            "pos_type": "ค่าจ้าง 8,340 แต่ไม่ถึง 15,050",
             "pos_lev": "ไม่ระบุ",
             "beg_pos_period": ">=8",
             "pos_lev_period": null,
@@ -985,7 +985,7 @@
             "schedule_no": 25,
             "order": 2,
             "personal_type": "ลูกจ้างประจำ",
-            "pos_type": "ไม่ระบุ",
+            "pos_type": "ค่าจ้าง 8,340 แต่ไม่ถึง 15,050",
             "pos_lev": "ไม่ระบุ",
             "beg_pos_period": ">=8",
             "pos_lev_period": null,
@@ -1005,7 +1005,7 @@
             "schedule_no": 25,
             "order": 3,
             "personal_type": "ลูกจ้างประจำ",
-            "pos_type": "ไม่ระบุ",
+            "pos_type": "ค่าจ้าง 8,340 แต่ไม่ถึง 15,050",
             "pos_lev": "ไม่ระบุ",
             "beg_pos_period": ">=8",
             "pos_lev_period": null,
@@ -1017,7 +1017,7 @@
             "ins_code": "จ.ม.",
             "ins_code_name": "จัตุรถาภรณ์มงกุฎไทย",
             "ins_code_name_full": "จัตุรถาภรณ์มงกุฎไทย (จ.ม.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 7
         },
         {
@@ -1025,7 +1025,7 @@
             "schedule_no": 25,
             "order": 4,
             "personal_type": "ลูกจ้างประจำ",
-            "pos_type": "ไม่ระบุ",
+            "pos_type": "ค่าจ้าง 15,050 ขึ้นไป",
             "pos_lev": "ไม่ระบุ",
             "beg_pos_period": ">=8",
             "pos_lev_period": null,
@@ -1045,7 +1045,7 @@
             "schedule_no": 25,
             "order": 5,
             "personal_type": "ลูกจ้างประจำ",
-            "pos_type": "ไม่ระบุ",
+            "pos_type": "ค่าจ้าง 15,050 ขึ้นไป",
             "pos_lev": "ไม่ระบุ",
             "beg_pos_period": ">=8",
             "pos_lev_period": null,
@@ -1065,7 +1065,7 @@
             "schedule_no": 25,
             "order": 6,
             "personal_type": "ลูกจ้างประจำ",
-            "pos_type": "ไม่ระบุ",
+            "pos_type": "ค่าจ้าง 15,050 ขึ้นไป",
             "pos_lev": "ไม่ระบุ",
             "beg_pos_period": ">=8",
             "pos_lev_period": null,
@@ -1077,7 +1077,7 @@
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
             "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 8
         },
         {
@@ -1157,7 +1157,7 @@
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
             "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 8
         },
         {
@@ -1237,7 +1237,7 @@
             "ins_code": "จ.ช.",
             "ins_code_name": "จัตุรถาภรณ์ช้างเผือก",
             "ins_code_name_full": "จัตุรถาภรณ์ช้างเผือก (จ.ช.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 8
         },
         {
@@ -1317,7 +1317,7 @@
             "ins_code": "ต.ม.",
             "ins_code_name": "ตริตาภรณ์มงกุฎไทย",
             "ins_code_name_full": "ตริตาภรณ์มงกุฎไทย (ต.ม.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 9
         },
         {
@@ -1397,7 +1397,7 @@
             "ins_code": "ต.ช.",
             "ins_code_name": "ตริตาภรณ์ช้างเผือก",
             "ins_code_name_full": "ตริตาภรณ์ช้างเผือก (ต.ช.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 10
         },
         {
@@ -1477,7 +1477,7 @@
             "ins_code": "ท.ม.",
             "ins_code_name": "ทวีติยาภรณ์มงกุฎไทย",
             "ins_code_name_full": "ทวีติยาภรณ์มงกุฎไทย (ท.ม.)",
-            "ins_code_highest_of_pos_lev": null,
+            "ins_code_highest_of_pos_lev": "highest",
             "ins_code_order": 11
         },
         {
