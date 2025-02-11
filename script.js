@@ -583,6 +583,7 @@ function validateForm() {
 }
 
 // --- Main Calculation Function ---
+// --- Main Calculation Function ---
 async function calculateDecoration(formData) {
   const data = await fetchData();
   if (!data) {
@@ -601,7 +602,12 @@ async function calculateDecoration(formData) {
       salary5y_input,
   } = formData;
 
- // --- 1. Early Exit: "คุณสมบัติยังไม่ถึงเกณฑ์" (Minimum Service Duration) ---
+  // --- 1. Calculate service period and check minimum requirement ---
+  const currentYearBE = new Date().getFullYear() + 543;
+  const begPosYearBE = beg_pos_date_input ? parseInt(beg_pos_date_input.split("/")[2], 10) : 0;
+  const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1 : 0;
+
+  // Find matching criteria in decoration data
   const relevantItem = data.decorData.find(
       (item) =>
           item.personal_type === personal_type_input &&
@@ -609,26 +615,15 @@ async function calculateDecoration(formData) {
           (item.pos_lev === pos_lev_input || (item.pos_lev === null && pos_lev_input === "ไม่ระบุ"))
   );
 
-  let minBegPosPeriodYears = null; // Initialize as null, NO default minimum
+  // Check beg_pos_period requirement only if specified in the data
   if (relevantItem && relevantItem.beg_pos_period) {
-      const specificMinPeriod = parsePeriod(relevantItem.beg_pos_period).min;
-      if (specificMinPeriod !== null) {
-          minBegPosPeriodYears = specificMinPeriod;
+      const { min } = parsePeriod(relevantItem.beg_pos_period);
+      if (min !== null && begPosPeriodYears < min) {
+          return "คุณสมบัติไม่ถึงเกณฑ์";
       }
   }
 
-// Calculate service years as difference between B.E. years.
-const currentYearBE = new Date().getFullYear() + 543;
-const begPosYearBE = beg_pos_date_input ? parseInt(beg_pos_date_input.split("/")[2], 10) : 0; // Extract year
-const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1: 0;// Calculate diff
-
-
-  // Only apply the check if a specific minimum was found.
-  if (minBegPosPeriodYears !== null && begPosPeriodYears < minBegPosPeriodYears) {
-      return "คุณสมบัติไม่ถึงเกณฑ์";
-  }
-
-  // --- 2. Early Exit: "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุด..." ---
+  // --- 2. Check for highest decoration ---
   if (last_ins_code_name_full_input && last_ins_code_name_full_input !== "null") {
       const selectedLastInsCodeData = data.decorData.find(item =>
           item.personal_type === personal_type_input &&
@@ -642,19 +637,18 @@ const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1: 0;/
       }
   }
 
-  // --- 3. Calculate Dates and Periods ---
-  const endDatePosLev = `28/05/${currentYearBE}`;  // Current B.E. year
-  const endDateLastIns = `28/07/${currentYearBE}`;  // Current B.E. year
+  // --- 3. Calculate periods ---
+  const endDatePosLev = `28/05/${currentYearBE}`;
+  const endDateLastIns = `28/07/${currentYearBE}`;
 
   const pos_lev_period_input_calc = pos_lev_date_input ? calculatePeriodInYears(pos_lev_date_input, endDatePosLev) : null;
   const last_ins_period_input_calc = last_ins_date_input ? calculatePeriodInYears(last_ins_date_input, endDateLastIns) : null;
 
-
-  // --- 4. Get Highest Possible Order ---
+  // --- 4. Get highest possible order ---
   const highestOrders = getHighestOrders(data);
   const highestOrderOfPosLev = highestOrders[pos_type_input + pos_lev_input] || 0;
 
-  // --- 5. Consecutive Year Check ---
+  // --- 5. Check consecutive years ---
   if (last_ins_date_input) {
       const lastInsYearBE = parseInt(last_ins_date_input.split("/")[2], 10);
       if (lastInsYearBE + 1 === currentYearBE) {
@@ -662,57 +656,39 @@ const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1: 0;/
       }
   }
 
-  // --- 6. Filter Data ---
+  // --- 6. Filter eligible decorations ---
   let filteredData = data.decorData.filter((item) => {
-      // Basic matching (required fields)
+      // Basic criteria matching
       if (item.personal_type !== personal_type_input) return false;
+      if (item.pos_type !== null && item.pos_type !== pos_type_input) return false;
+      if (item.pos_lev !== null && item.pos_lev !== pos_lev_input) return false;
 
-      if (pos_type_input !== null && item.pos_type !== pos_type_input) return false;
-      if (pos_type_input === null && item.pos_type !== null) return false;
-
-      if (pos_lev_input !== null && item.pos_lev !== pos_lev_input) return false;
-      if (pos_lev_input === null && item.pos_lev !== null) return false;
-
-      // Period and Salary checks (ONLY if the JSON field has a value)
+      // Period and salary checks (only if specified in criteria)
       if (item.pos_lev_period && !checkPosLevPeriodCondition(pos_lev_period_input_calc, item.pos_lev_period)) return false;
       if (item.salary && !checkSalaryCondition(salary_input, item.salary)) return false;
       if (item.salary5y && !checkSalary5yCondition(salary5y_input, item.salary5y)) return false;
+      
+      // Check last_ins_period only if specified in criteria
       if (item.last_ins_period && !checkLastInsPeriodCondition(last_ins_period_input_calc, item.last_ins_period)) return false;
 
-      // last_ins_code check (handle null and matching both code and name)
+      // Special handling for last_ins_code
       if (last_ins_code_name_full_input === "null" || !last_ins_code_name_full_input) {
-          if (item.last_ins_code !== null || item.last_ins_code_name_full !== null) return false;
+          return item.last_ins_code === null;
       } else {
-          const selectedLastInsOrder = getInsCodeOrder(data, last_ins_code_name_full_input);
-          if (selectedLastInsOrder === null) return false; // Invalid selection.
-
-          // Only check if item.last_ins_code is not null in the JSON
-          if (item.last_ins_code !== null) {
-              if (item.last_ins_code !== data.decorData.find(i => i.ins_code_name_full === last_ins_code_name_full_input)?.ins_code) return false;
-              if (item.ins_code_name_full !== last_ins_code_name_full_input) return false;
-          }
+          const currentInsOrder = getInsCodeOrder(data, last_ins_code_name_full_input);
+          return item.ins_code_order > currentInsOrder && item.ins_code_order <= highestOrderOfPosLev;
       }
-
-      return true; // All checks passed
   });
 
-  // --- 7. Find Matching Decoration (Final Selection) ---
+  // --- 7. Select appropriate decoration ---
   let selectedDecoration = null;
-
   if (filteredData.length > 0) {
-      if (!last_ins_code_name_full_input || last_ins_code_name_full_input === "null") {
-          // Never requested: Find *first* matching item with lowest ins_code_order within allowed range,
-          // and with correct pos_type and pos_lev
-          selectedDecoration = filteredData.find(item => item.ins_code_order <= highestOrderOfPosLev);
-
-      } else {
-          // Previous decoration: Find the next higher decoration, within the allowed range.
-          const lastInsOrder = getInsCodeOrder(data, last_ins_code_name_full_input);
-          selectedDecoration = filteredData.find(item => item.ins_code_order > lastInsOrder && item.ins_code_order <= highestOrderOfPosLev);
-      }
+      // Sort by ins_code_order to get the next eligible decoration
+      filteredData.sort((a, b) => a.ins_code_order - b.ins_code_order);
+      selectedDecoration = filteredData[0];
   }
 
-  // --- 8. Return Result ---
+  // --- 8. Return result ---
   if (selectedDecoration) {
       return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " + selectedDecoration.ins_code_name_full;
   } else {
