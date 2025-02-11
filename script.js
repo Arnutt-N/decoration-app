@@ -692,6 +692,6 @@ async function calculateDecoration(formData) {
   if (selectedDecoration) {
       return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " + selectedDecoration.ins_code_name_full;
   } else {
-      return "คุณสมบัติไม่ถึงเกณฑ์ หรือตรวจสอบข้อมูลอีกครั้ง";
+      return "คุณสมบัติไม่ถึงเกณฑ์";
   }
 }
