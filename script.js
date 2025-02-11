@@ -181,13 +181,13 @@ document.addEventListener("DOMContentLoaded", function () {
 // Calculate period in years between two dates (dd/mm/yyyy)
 function calculatePeriodInYears(startDateStr, endDateStr) {
   if (!startDateStr || !endDateStr) return null; // Handle null/empty
-  // ใช้ Moment.js ในการคำนวณ
+  // Use Moment.js for accurate date calculations, and set to Thai locale
   const startDate = moment(startDateStr, "DD/MM/YYYY");
   const endDate = moment(endDateStr, "DD/MM/YYYY");
 
   if (!startDate.isValid() || !endDate.isValid()) return null; // Handle invalid dates
 
-  return endDate.diff(startDate, "years", true); // 'true' for floating point result
+  return endDate.diff(startDate, "years", true); // 'true' for floating-point result
 }
 
 // Parse period string (e.g., ">=5,<10")
@@ -542,7 +542,7 @@ function validateForm() {
               // เช็ค *เฉพาะ* empty string ("")
               showError(
                   inputElement,
-                  "กรุณาเลือกเครื่องราชขั้นล่าสุด หรือ 'ไม่เคยได้รับพระราชทานเครื่องราชฯ'"
+                  "กรุณาเลือกเครื่องราชฯ หรือ ไม่เคยได้รับพระราชทานเครื่องราชฯ"
               );
               isValid = false;
           }
@@ -609,7 +609,7 @@ async function calculateDecoration(formData) {
           (item.pos_lev === pos_lev_input || (item.pos_lev === null && pos_lev_input === "ไม่ระบุ"))
   );
 
-  let minBegPosPeriodYears = null; // Initialize as null, no default
+  let minBegPosPeriodYears = null; // Initialize as null, NO default minimum
   if (relevantItem && relevantItem.beg_pos_period) {
       const specificMinPeriod = parsePeriod(relevantItem.beg_pos_period).min;
       if (specificMinPeriod !== null) {
@@ -617,10 +617,10 @@ async function calculateDecoration(formData) {
       }
   }
 
-  // Calculate service years as difference between B.E. years.
-  const currentYearBE = new Date().getFullYear() + 543;
-  const begPosYearBE = beg_pos_date_input ? parseInt(beg_pos_date_input.split("/")[2], 10) : 0; // Extract year
-  const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1 : 0; // Calculate diff
+// Calculate service years as difference between B.E. years.
+const currentYearBE = new Date().getFullYear() + 543;
+const begPosYearBE = beg_pos_date_input ? parseInt(beg_pos_date_input.split("/")[2], 10) : 0; // Extract year
+const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1: 0;// Calculate diff
 
 
   // Only apply the check if a specific minimum was found.
