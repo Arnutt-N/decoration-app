@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const submitButton = form.querySelector('button[type="submit"]');
           submitButton.disabled = false;
           submitButton.innerHTML =
-              '<i class="fas fa-search me-2"></i>ตรวจสอบเครื่องราชขั้นถัดไป';
+              '<i class="fas fa-search me-2"></i>ตรวจสอบเครื่องราชฯ';
       }
   });
 
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- Calculate and set salary5y_year ---
   const currentYearBE = new Date().getFullYear() + 543;
-  document.getElementById("salary5y_year").textContent = currentYearBE;
+  document.getElementById("salary5y_year").textContent = currentYearBE - 5 ;
 
   // --- Populate dropdowns and set up hierarchy ---
   populateDropdowns();

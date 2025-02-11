@@ -80,7 +80,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="beg_pos_date">
-                                วันที่บรรจุ <span class="required-star">*</span>
+                                วันที่บรรจุ <span class="required-star">*</span><span id="beg_pos_date_hint"
+                                    class="form-hint">(พิมพ์ เช่น 01/01/2560)</span>
                             </label>
                             <input type="text" id="beg_pos_date" name="beg_pos_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)" required aria-describedby="beg_pos_date_error">
@@ -91,8 +92,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="pos_lev_date">
-                                วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน <span class="required-star">*</span>
-                                <span id="pos_lev_date_hint" class="form-hint">(วว/ดด/ปปปป พ.ศ.)</span>
+                                วันที่เข้าสู่ระดับตำแหน่งปัจจุบัน <span id="pos_lev_date_hint"
+                                    class="form-hint">(หากไม่มี - ไม่ต้องระบุ)</span>
                             </label>
                             <input type="text" id="pos_lev_date" name="pos_lev_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)" aria-describedby="pos_lev_date_error">
@@ -107,7 +108,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="salary">
-                                เงินเดือนปัจจุบัน <span class="required-star">*</span>
+                                เงินเดือนปัจจุบัน <span class="required-star">*</span><span id="salary_hint"
+                                    class="form-hint">(พิมพ์ เช่น 18000)</span>
                             </label>
                             <div class="input-group">
                                 <input type="number" id="salary" name="salary" class="form-control"
@@ -121,9 +123,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="salary5y">
-                                เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span><span class="required-star">
-                                    *</span>
-                                <span id="salary5y_year_no" class="form-hint">(หากไม่มี - ไม่ต้องระบุ)</span>
+                                เงินเดือน ณ 1 เมษายน <span id="salary5y_year"></span> <span id="salary5y_year_no"
+                                    class="form-hint">(หากไม่มี - ไม่ต้องระบุ)</span>
                             </label>
                             <div class="input-group">
                                 <input type="number" id="salary5y" name="salary5y" class="form-control"
@@ -142,13 +143,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="last_ins_code">
-                                เครื่องราชฯ ขั้นล่าสุด <span class="required-star">*</span>
-                                <span id="last_ins_code_hint" class="form-hint">(ถ้ามี)</span>
+                                เครื่องราชฯ ชั้นล่าสุด <span class="required-star">*</span><span id="last_ins_code_hint"
+                                    class="form-hint">(ถ้ามี)</span>
                             </label>
                             <select id="last_ins_code" name="เครื่องราชชั้นล่าสุด" class="form-select" required
                                 aria-describedby="last_ins_code_error">
                                 <!-- Options will be populated by JavaScript -->
-                                <option value="" selected disabled>เลือกเครื่องราชขั้นล่าสุด</option>
+                                <option value="" selected disabled>เลือกเครื่องราชฯ ชั้นล่าสุด</option>
                             </select>
                             <div class="invalid-feedback" id="last_ins_code_error" role="alert"></div>
                         </div>
@@ -157,8 +158,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="last_ins_date">
-                                วันที่ได้รับเครื่องราชฯ <span class="required-star">*</span>
-                                <span id="last_ins_date_hint" class="form-hint">(วว/ดด/ปปปป พ.ศ.)</span>
+                                วันที่ได้รับเครื่องราชฯ <span id="last_ins_date_hint" class="form-hint">(หากไม่มี -
+                                    ไม่ต้องระบุ)</span>
                             </label>
                             <input type="text" id="last_ins_date" name="last_ins_date" class="form-control"
                                 placeholder="วว/ดด/ปปปป (พ.ศ.)" aria-describedby="last_ins_date_error">
@@ -171,7 +172,7 @@
                 <div class="d-flex justify-content-center gap-3 mt-4">
                     <button type="submit" class="btn btn-primary px-5">
                         <i class="fas fa-search me-2"></i>
-                        ตรวจสอบเครื่องราชขั้นถัดไป
+                        ตรวจสอบเครื่องราชฯ
                     </button>
                     <button type="reset" id="btnClearForm" class="btn btn-danger px-5">
                         <i class="fas fa-times me-2"></i>
