@@ -605,7 +605,7 @@ async function calculateDecoration(formData) {
   // --- 1. Calculate service period and check minimum requirement ---
   const currentYearBE = new Date().getFullYear() + 543;
   const begPosYearBE = beg_pos_date_input ? parseInt(beg_pos_date_input.split("/")[2], 10) : 0;
-  const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) + 1 : 0;
+  const begPosPeriodYears = begPosYearBE ? (currentYearBE - begPosYearBE) : 0;
 
   // Find matching criteria in decoration data
   const relevantItem = data.decorData.find(
