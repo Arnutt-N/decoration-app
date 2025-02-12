@@ -214,9 +214,28 @@ body {
   /* Make sure input groups don't break */
   .input-group {
     margin-bottom: 1rem; /* Consistent spacing */
+    align-items: stretch; /* Ensure children stretch to full height */
   }
+
+  .input-group .form-control {
+    height: auto;
+    padding: 8px 12px; /* Adjust padding to control height */
+    margin-bottom: 0; /* Remove bottom margin when in input group */
+  }
+
   .input-group-text {
     font-size: 0.9rem; /* Match input font size */
+    padding: 8px 12px; /* Match padding with input */
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0 8px 8px 0; /* Keep right side rounded */
+  }
+
+  /* Ensure left input has correct border radius */
+  .input-group > .form-control:first-child {
+    border-radius: 8px 0 0 8px;
   }
 
   /* 3. General Layout */
