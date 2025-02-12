@@ -1,211 +1,267 @@
 /* Import Google Font "Prompt" */
 @import url("https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap");
 
+/* Apply border-box to all elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* --- General Styles --- */
 body {
-    font-family: "Prompt", sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-    min-height: 100vh;
+  font-family: "Prompt", sans-serif;
+  background: linear-gradient(
+    135deg,
+    #f0f2f5 0%,
+    #e0e4eb 100%
+  ); /* More subtle gradient */
+  min-height: 100vh;
 }
 
 .form-container {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* A more modern, subtle shadow */
+  /* Remove backdrop-filter for performance, unless really needed */
+  /* backdrop-filter: blur(10px);  Consider removing this */
+  /* padding: 0; */
+  overflow: hidden; /* Ensure the header's gradient doesn't overflow*/
+  width: 100%; /* Add width: 100% */
+  max-width: 900px; /* Keep max-width */
 }
 
 /* --- Form Header --- */
 .form-header {
-    background: #1a73e8;
-    color: white;
-    border-radius: 15px 15px 0 0;
-    padding: 20px;
-    margin: -20px -20px 20px -20px;
+  background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+  color: white;
+  border-radius: 15px 15px 0 0;
+  padding: 25px;
+  margin: -24px -24px 25px -24px;
+  /* text-align: center; */
+}
+
+.form-header h3 {
+  font-size: 1.75rem; /* Slightly larger heading */
+  font-weight: 600; /* Slightly bolder heading */
+  margin-bottom: 0.5rem; /* Space between h3 and h6 */
+}
+
+.form-header h6 {
+  font-size: 1rem; /* Slightly larger subheading */
+  font-weight: 400;
+  opacity: 0.8; /* Slightly faded subheading for hierarchy */
 }
 
 /* --- Form Controls --- */
 .form-control,
 .form-select {
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    padding: 12px;
-    transition: all 0.3s;
-    font-family: "Prompt", sans-serif;
+  border-radius: 8px;
+  border: 1px solid #ced4da; /* Lighter border color */
+  padding: 10px 15px; /* Slightly adjusted padding */
+  transition: all 0.2s ease-in-out; /* Smoother transitions */
+  font-family: "Prompt", sans-serif;
+  font-size: 1rem; /* Slightly larger font for better readability */
+  line-height: 1.5; /* Increased line-height for readability*/
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #1a73e8;
-    box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
-    outline: none; /* Remove default focus outline */
+  border-color: #3498db; /* Use the brighter blue for focus */
+  box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25); /* Consistent focus shadow */
+  outline: none;
 }
 
 /* --- Buttons --- */
+.btn {
+  /* Style all buttons consistently*/
+  padding: 10px 20px; /* Make button text fit better*/
+  border-radius: 10px; /* Match form control radius */
+  font-family: "Prompt", sans-serif;
+  font-size: 1rem; /* Consistent font size */
+  transition: transform 0.2s ease-in-out; /* Smooth transform */
+}
+
 .btn-primary {
-    background: #1a73e8;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    transition: all 0.3s;
-    font-family: "Prompt", sans-serif;
+  background-color: #2980b9; /* Consistent blue */
+  border-color: #2980b9;
 }
 
 .btn-primary:hover {
-    background: #1557b0;
-    transform: translateY(-1px);
+  background: #1557b0;
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover {
+  background-color: #2471a3; /* Darker shade on hover */
+  border-color: #2471a3;
+  transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
 .btn-danger {
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-family: "Prompt", sans-serif;
+  background-color: #e74c3c; /* Standard danger color */
+  border-color: #e74c3c;
+}
+.btn-danger:hover {
+  background-color: #c0392b; /* Darker shade on hover */
+  border-color: #c0392b;
+  transform: scale(1.05);
 }
 
 /* --- Labels --- */
 .form-label {
-    font-weight: 500;
-    color: #444;
-    margin-bottom: 8px;
-    font-family: "Prompt", sans-serif;
-    display: inline-block;
-    margin-right: 0.5rem;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.5rem; /* Consistent spacing */
+  font-family: "Prompt", sans-serif;
+  display: inline-block; /* Already inline-block */
+  margin-right: 0.5rem;
+  position: relative; /* Make the label a positioning context*/
 }
 
 /* --- Required Field Indicator --- */
 .required-star {
-    color: red;
+  color: red;
 }
 
 /* --- Input Groups --- */
 .input-group {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+/* Style the input group text (e.g., "บาท") */
+.input-group-text {
+  background-color: #e9ecef; /* Keep existing style */
+  border: 1px solid #ced4da; /* Keep existing style */
+  border-radius: 10px; /* Keep existing style */
+  color: #495057; /* Keep existing style */
+  /* NEW STYLES */
+  font-size: 1rem; /* Match the .form-control font-size */
+  line-height: 1.5; /* Match .form-control for vertical alignment */
+  display: flex; /* Use flexbox for vertical centering */
+  align-items: center; /* Center vertically within the input group */
 }
 
 /* --- Form Hints (smaller text below labels) --- */
 .form-hint {
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 400;
-    margin-left: 0.5rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 400;
+  margin-left: 0.5rem;
 }
 
 /* --- Error Messages --- */
 .invalid-feedback {
-    display: none;
-    color: red;
-    font-size: 0.875em;
-    margin-top: 0.55rem;
+  display: none;
+  color: red;
+  font-size: 0.875em;
+  margin-top: 0.55rem;
 }
 
 /* Show error (when .was-validated is present) */
 .was-validated .form-control:invalid ~ .invalid-feedback,
 .was-validated .form-select:invalid ~ .invalid-feedback {
-    display: block;
+  display: block;
 }
 
 /* Highlight invalid fields (when .was-validated is present) */
 .was-validated .form-control:invalid,
 .was-validated .form-select:invalid {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
-
-
 
 /* --- Mobile First Styles (max-width: 576px) --- */
 @media (max-width: 576px) {
+  /* 1. Buttons */
+  .d-flex.justify-content-center {
+    flex-direction: column; /* Stack buttons vertically */
+  }
 
-    /* 1. Buttons */
-    .d-flex.justify-content-center {
-        flex-direction: column; /* Stack buttons vertically */
-    }
+  .btn {
+    width: 100%; /* Full-width buttons */
+    margin-bottom: 0.5rem; /* Spacing between stacked buttons */
+    padding: 10px 15px; /* Slightly smaller padding */
+    font-size: 1rem; /* Slightly smaller font-size */
+    /* Remove icons (optional, but good for very small screens): */
+    /* i { display: none; } */
+  }
 
-    .btn {
-        width: 100%; /* Full-width buttons */
-        margin-bottom: 0.5rem; /* Spacing between stacked buttons */
-        padding: 10px 15px;  /* Slightly smaller padding */
-        font-size: 1rem; /* Slightly smaller font-size */
-        /* Remove icons (optional, but good for very small screens): */
-        /* i { display: none; } */
-    }
+  /*Remove margin-right from all labels */
+  .form-label {
+    font-size: 0.9rem; /* Slightly smaller font size for labels */
+    margin-right: 0;
+  }
 
-     /*Remove margin-right from all labels */
-    .form-label {
-      margin-right: 0;
-    }
+  /* Adjust padding/margin (optional, for better spacing):*/
+  .form-container {
+    padding: 1rem;
+  }
 
-    /* Adjust padding/margin (optional, for better spacing):*/
-    .form-container {
-        padding: 1rem;
-    }
+  /* 2. Form elements */
+  .form-control,
+  .form-select {
+    width: 100%; /* Full-width form elements */
+    font-size: 0.9rem; /* Smaller font for inputs */
+    margin-bottom: 1rem; /* More spacing between elements */
+  }
 
-    /* 2. Form elements */
-    .form-control,
-    .form-select {
-        width: 100%; /* Full-width form elements */
-        font-size: 0.9rem; /* Smaller font for inputs */
-        margin-bottom: 1rem; /* More spacing between elements */
-    }
+  .form-label {
+    margin-bottom: 0.3rem; /* Less margin above labels */
+    font-size: 0.9rem; /* Slightly smaller font size for labels */
+  }
 
-    .form-label {
-        margin-bottom: 0.3rem; /* Less margin above labels */
-        font-size: 0.9rem; /* Slightly smaller font size for labels */
-    }
+  /* Make sure input groups don't break */
+  .input-group {
+    margin-bottom: 1rem; /* Consistent spacing */
+  }
+  .input-group-text {
+    font-size: 0.9rem; /* Match input font size */
+  }
 
-    /* Make sure input groups don't break */
-    .input-group {
-      margin-bottom: 1rem; /* Consistent spacing */
-    }
-    .input-group-text {
-        font-size: 0.9rem; /* Match input font size */
-    }
+  /* 3. General Layout */
+  .form-header {
+    padding: 15px; /* Less padding in header */
+    margin: -1rem -1rem 1rem -1rem; /* Adjust negative margins */
+  }
+  .form-header h3 {
+    font-size: 1.5rem; /* Smaller heading */
+  }
+  .form-header h6 {
+    font-size: 0.9rem; /* Smaller sub-heading */
+  }
 
+  /* Form Hints on Mobile */
+  /* .form-hint {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  } */
 
-    /* 3. General Layout */
-    .form-header {
-        padding: 15px; /* Less padding in header */
-        margin: -1rem -1rem 1rem -1rem; /* Adjust negative margins */
-    }
-    .form-header h3{
-      font-size: 1.5rem; /* Smaller heading */
-    }
-    .form-header h6 {
-        font-size: 0.9rem; /* Smaller sub-heading */
-    }
+  /* --- Responsive adjustments for specific sections --- */
+  .row.g-4 {
+    --bs-gutter-x: 1rem; /* Reduce horizontal gutter */
+    --bs-gutter-y: 1rem; /* Reduce vertical gutter */
+  }
 
-    /* Form Hints on Mobile */
-    .form-hint {
-        display: block;
-        margin-left: 0;
-        margin-top: 0.25rem;
-    }
-
-    /* --- Responsive adjustments for specific sections --- */
-    .row.g-4 {
-      --bs-gutter-x: 1rem; /* Reduce horizontal gutter */
-      --bs-gutter-y: 1rem; /* Reduce vertical gutter */
-    }
-
-     /* Force full-width columns in the form */
-     .row > div {
-        width: 100%;
-        padding-left: 0;    /* Remove default padding */
-        padding-right: 0;   /* Remove default padding */
-        margin-bottom: 0;  /* Remove any extra bottom margin */
-    }
+  /* Force full-width columns in the form */
+  .row > div {
+    width: 100%;
+    padding-left: 0; /* Remove default padding */
+    padding-right: 0; /* Remove default padding */
+    margin-bottom: 0; /* Remove any extra bottom margin */
+  }
 }
-
 
 /* --- Larger Screen Button Styles (optional, kept from original)--- */
 @media (min-width: 577px) {
-    .form-group.d-flex.justify-content-center {
-        padding-top: 1rem;
-    }
+  .form-group.d-flex.justify-content-center {
+    padding-top: 1rem;
+  }
 
-    .form-group.d-flex.justify-content-center button {
-        min-width: 200px;
-        margin: 0 0.5rem;
-        border-radius: 8px;
-    }
+  .form-group.d-flex.justify-content-center button {
+    min-width: 200px;
+    margin: 0 0.5rem;
+    border-radius: 8px;
+  }
 }
