@@ -240,8 +240,8 @@ body {
 
   /* 3. General Layout */
   .form-header {
-    padding: 15px; /* Less padding in header */
-    margin: -1rem -1rem 1rem -1rem; /* Adjust negative margins */
+    padding: 20px; /* Less padding in header */
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem; /* Adjust negative margins */
   }
   .form-header h3 {
     font-size: 1.5rem; /* Smaller heading */

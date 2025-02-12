@@ -1,293 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Test Cases - Royal Decoration Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .test-case {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #fff;
+        }
+
+        .test-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .test-input {
+            margin-bottom: 5px;
+        }
+
+        .result {
+            font-weight: bold;
+        }
+
+        .passed {
+            color: green;
+        }
+
+        .failed {
+            color: red;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="container">
+        <h1>Test Cases - Decoration Check</h1>
+        <div id="testResults">
+            <!-- Test results will be displayed here -->
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script src="test_cases.js"></script>
     <script>
-        // Helper function to calculate years between dates as of 2568 BE
-function calculateYearsBetween(startDate, endDate = "01/01/2568") {
-    if (!startDate || startDate === "null") return 0;
-    const [startDay, startMonth, startYear] = startDate.split("/").map(Number);
-    const [endDay, endMonth, endYear] = endDate.split("/").map(Number);
-    
-    let years = endYear - startYear;
-    if (endMonth < startMonth || (endMonth === startMonth && endDay < startDay)) {
-        years--;
-    }
-    return years;
-}
+        document.addEventListener("DOMContentLoaded", async function () {
+            const testResultsDiv = document.getElementById("testResults");
 
-// Decoration levels in order from lowest to highest
-const DECORATION_LEVELS = [
-    "บ.ม.", // เบญจมาภรณ์มงกุฎไทย
-    "บ.ช.", // เบญจมาภรณ์ช้างเผือก
-    "จ.ม.", // จัตุรถาภรณ์มงกุฎไทย
-    "จ.ช.", // จัตุรถาภรณ์ช้างเผือก
-    "ต.ม.", // ตริตาภรณ์มงกุฎไทย
-    "ต.ช.", // ตริตาภรณ์ช้างเผือก
-    "ท.ม.", // ทวีติยาภรณ์มงกุฎไทย
-    "ท.ช.", // ทวีติยาภรณ์ช้างเผือก
-    "ป.ม.", // ประถมาภรณ์มงกุฎไทย
-    "ป.ช.", // ประถมาภรณ์ช้างเผือก
-];
+            // Function to run test cases and display results
+            async function runTests() {
+                for (const testCase of testCases) {
+                    const {
+                        caseNum,
+                        description,
+                        input,
+                        expected
+                    } = testCase;
 
-// Get next decoration level
-function getNextDecoration(currentDecoration) {
-    if (!currentDecoration || currentDecoration === "null") return DECORATION_LEVELS[0];
-    const currentIndex = DECORATION_LEVELS.findIndex(d => currentDecoration.includes(d));
-    if (currentIndex === -1 || currentIndex === DECORATION_LEVELS.length - 1) return null;
-    return DECORATION_LEVELS[currentIndex + 1];
-}
+                    // Create a div for the test case
+                    const testCaseDiv = document.createElement("div");
+                    testCaseDiv.classList.add("test-case");
 
-function calculateDecoration({
-    personal_type_input,
-    pos_type_input,
-    pos_lev_input,
-    beg_pos_date_input,
-    pos_lev_date_input,
-    salary_input,
-    salary5y_input,
-    last_ins_code_name_full_input,
-    last_ins_date_input
-}) {
-    // Calculate relevant periods
-    const serviceYears = calculateYearsBetween(beg_pos_date_input);
-    const lastInsYears = calculateYearsBetween(last_ins_date_input);
-    
-    // Check if received decoration in previous year
-    if (lastInsYears === 0) {
-        return "ไม่เสนอขอพระราชทานเครื่องราชฯ ในปีติดกัน";
-    }
+                    // Add header with case number and description
+                    const header = document.createElement("div");
+                    header.classList.add("test-header");
+                    header.textContent = `Case #${caseNum}: ${description}`;
+                    testCaseDiv.appendChild(header);
 
-    // Handle different personal types
-    switch (personal_type_input) {
-        case "ข้าราชการ": {
-            if (pos_type_input === "วิชาการ") {
-                return handleAcademicPosition({
-                    pos_lev_input,
-                    serviceYears,
-                    lastInsYears,
-                    salary_input,
-                    salary5y_input,
-                    last_ins_code_name_full_input
-                });
-            } else if (pos_type_input === "ทั่วไป") {
-                return handleGeneralPosition({
-                    pos_lev_input,
-                    serviceYears,
-                    salary_input,
-                    last_ins_code_name_full_input
-                });
-            }
-            break;
-        }
-        
-        case "ลูกจ้างประจำ": {
-            if (serviceYears < 8) return "คุณสมบัติไม่ถึงเกณฑ์";
-            if (salary_input >= 8340 && salary_input <= 15050) {
-                const nextDec = getNextDecoration(last_ins_code_name_full_input);
-                if (!nextDec || nextDec !== "บ.ม.") {
-                    return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว";
+                    // Add input data
+                    for (const key in input) {
+                        if (input.hasOwnProperty(key)) {
+                            const inputDiv = document.createElement("div");
+                            inputDiv.classList.add("test-input");
+                            inputDiv.textContent = `${key}: ${input[key]}`;
+                            testCaseDiv.appendChild(inputDiv);
+                        }
+                    }
+
+                    // Run the calculation
+                    const result = await calculateDecoration(input);
+
+                    // Display expected and actual results
+                    const expectedDiv = document.createElement("div");
+                    expectedDiv.textContent = `Expected: ${expected}`;
+                    testCaseDiv.appendChild(expectedDiv);
+
+                    const actualDiv = document.createElement("div");
+                    actualDiv.textContent = `Actual: ${result}`;
+                    testCaseDiv.appendChild(actualDiv);
+
+                    // Determine if the test passed or failed
+                    const resultDiv = document.createElement("div");
+                    resultDiv.classList.add("result");
+                    if (result === expected) {
+                        resultDiv.classList.add("passed");
+                        resultDiv.textContent = "Result: Passed";
+                    } else {
+                        resultDiv.classList.add("failed");
+                        resultDiv.textContent = "Result: Failed";
+                    }
+                    testCaseDiv.appendChild(resultDiv);
+
+                    // Add the test case div to the test results
+                    testResultsDiv.appendChild(testCaseDiv);
                 }
-                return `เครื่องราชอิสริยาภรณ์ชั้นถัดไป: เบญจมาภรณ์มงกุฎไทย (บ.ม.)`;
             }
-            break;
-        }
-        
-        case "พนักงานราชการ": {
-            return handleGovernmentEmployee({
-                pos_type_input,
-                pos_lev_input,
-                serviceYears,
-                lastInsYears,
-                last_ins_code_name_full_input
-            });
-        }
-    }
-    
-    return "คุณสมบัติไม่ถึงเกณฑ์";
-}
 
-function handleAcademicPosition({
-    pos_lev_input,
-    serviceYears,
-    lastInsYears,
-    salary_input,
-    salary5y_input,
-    last_ins_code_name_full_input
-}) {
-    const maxDecorations = {
-        "ปฏิบัติการ": "ต.ม.",
-        "ชำนาญการ": "ท.ช.",
-        "ชำนาญการพิเศษ": "ป.ม.",
-        "เชี่ยวชาญ": "ป.ม."
-    };
-
-    // Check if already has highest decoration for position
-    if (last_ins_code_name_full_input !== "null") {
-        const maxDec = maxDecorations[pos_lev_input];
-        if (last_ins_code_name_full_input.includes(maxDec)) {
-            return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว";
-        }
-    }
-
-    switch (pos_lev_input) {
-        case "ปฏิบัติการ": {
-            if (serviceYears < 5) return "คุณสมบัติไม่ถึงเกณฑ์";
-            return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ตริตาภรณ์มงกุฎไทย (ต.ม.)";
-        }
-        
-        case "ชำนาญการ": {
-            if (last_ins_code_name_full_input.includes("ต.ม.")) {
-                if (salary5y_input >= 22140) {
-                    return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ทวีติยาภรณ์ช้างเผือก (ท.ช.)";
-                }
-                if (salary_input >= 22140) {
-                    return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ทวีติยาภรณ์มงกุฎไทย (ท.ม.)";
-                }
-                return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ตริตาภรณ์ช้างเผือก (ต.ช.)";
-            }
-            break;
-        }
-        
-        case "ชำนาญการพิเศษ": {
-            if (salary_input >= 58390 && lastInsYears >= 5) {
-                return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ประถมาภรณ์มงกุฎไทย (ป.ม.)";
-            }
-            return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ทวีติยาภรณ์ช้างเผือก (ท.ช.)";
-        }
-        
-        case "เชี่ยวชาญ": {
-            if (last_ins_code_name_full_input.includes("ท.ช.")) {
-                return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ประถมาภรณ์มงกุฎไทย (ป.ม.)";
-            }
-            break;
-        }
-    }
-    
-    return "คุณสมบัติไม่ถึงเกณฑ์";
-}
-
-function handleGeneralPosition({
-    pos_lev_input,
-    serviceYears,
-    salary_input,
-    last_ins_code_name_full_input
-}) {
-    if (pos_lev_input === "ปฏิบัติงาน") {
-        const maxDec = "จ.ช.";
-        if (last_ins_code_name_full_input.includes(maxDec)) {
-            return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว";
-        }
-
-        if (serviceYears < 5) return "คุณสมบัติไม่ถึงเกณฑ์";
-        
-        if (salary_input < 10190) {
-            if (serviceYears >= 10) {
-                return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: เบญจมาภรณ์ช้างเผือก (บ.ช.)";
-            }
-            return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: เบญจมาภรณ์มงกุฎไทย (บ.ม.)";
-        } else {
-            if (serviceYears >= 10) {
-                return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: จัตุรถาภรณ์ช้างเผือก (จ.ช.)";
-            }
-            return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: จัตุรถาภรณ์มงกุฎไทย (จ.ม.)";
-        }
-    }
-    
-    return "คุณสมบัติไม่ถึงเกณฑ์";
-}
-
-function handleGovernmentEmployee({
-    pos_type_input,
-    pos_lev_input,
-    serviceYears,
-    lastInsYears,
-    last_ins_code_name_full_input
-}) {
-    if (pos_type_input === "กลุ่มงานบริการ") {
-        if (serviceYears < 5) return "คุณสมบัติไม่ถึงเกณฑ์";
-        return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: เบญจมาภรณ์มงกุฎไทย (บ.ม.)";
-    }
-    
-    if (pos_type_input === "กลุ่มงานเชี่ยวชาญพิเศษ" && pos_lev_input === "สากล") {
-        const maxDec = "ป.ช.";
-        if (last_ins_code_name_full_input.includes(maxDec)) {
-            return "ได้รับพระราชทานเครื่องราชฯ ชั้นสูงสุดของระดับตำแหน่งแล้ว";
-        }
-
-        if (last_ins_code_name_full_input.includes("ท.ม.") && lastInsYears >= 5) {
-            return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ทวีติยาภรณ์ช้างเผือก (ท.ช.)";
-        }
-        
-        if (last_ins_code_name_full_input.includes("ป.ม.") && lastInsYears >= 3) {
-            return "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ประถมาภรณ์ช้างเผือก (ป.ช.)";
-        }
-    }
-    
-    return "คุณสมบัติไม่ถึงเกณฑ์";
-}
-
-// Test Cases
-const testCases = [
-    {
-        caseNum: 1,
-        description: "ข้าราชการ/วิชาการ/ปฏิบัติการ - First decoration request with 5 years service",
-        input: {
-            personal_type_input: "ข้าราชการ",
-            pos_type_input: "วิชาการ",
-            pos_lev_input: "ปฏิบัติการ",
-            beg_pos_date_input: "01/01/2563",
-            pos_lev_date_input: null,
-            salary_input: 18000,
-            salary5y_input: null,
-            last_ins_code_name_full_input: "ไม่เคยได้รับพระราชทานเครื่องราชฯ",
-            last_ins_date_input: null
-        },
-        expected: "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: ตริตาภรณ์มงกุฎไทย (ต.ม.)"
-    }
-];
-
-// Test runner
-function runTests() {
-    console.log("Running Royal Decoration Calculator Tests...\n");
-    let passedTests = 0;
-    let failedTests = 0;
-
-    testCases.forEach((testCase) => {
-        console.group(`Test Case ${testCase.caseNum}: ${testCase.description}`);
-        const result = calculateDecoration(testCase.input);
-        const passed = result === testCase.expected;
-        
-        console.log(`Input:    `, testCase.input);
-        console.log(`Expected: ${testCase.expected}`);
-        console.log(`Actual:   ${result}`);
-        console.log(`Status:   ${passed ? "✅ PASSED" : "❌ FAILED"}`);
-        
-        if (passed) {
-            passedTests++;
-        } else {
-            failedTests++;
-            console.log("Debugging info:");
-            console.log("- Result type:", typeof result);
-            console.log("- Expected type:", typeof testCase.expected);
-        }
-        console.groupEnd();
-        console.log("-".repeat(80) + "\n");
-    });
-
-    console.log("Test Summary:");
-    console.log(`Total Tests: ${testCases.length}`);
-    console.log(`Passed: ${passedTests}`);
-    console.log(`Failed: ${failedTests}`);
-    console.log(`Success Rate: ${(passedTests / testCases.length * 100).toFixed(2)}%`);
-}
-
-// Run tests when page loads
-window.onload = runTests;
-</script>
+            // Run the tests
+            await runTests();
+        });
+    </script>
 </body>
+
 </html>
