@@ -355,3 +355,78 @@ body {
   border-color: #f1c40f !important;
   color: #f1c40f !important;
 }
+
+/* --- Footer Styles --- */
+.footer {
+  position: relative;
+  padding: 2rem 0;
+  color: #2c3e50;
+  background: linear-gradient(
+    135deg,
+    rgba(41, 128, 185, 0.02) 0%,
+    rgba(52, 152, 219, 0.05) 50%,
+    rgba(41, 128, 185, 0.02) 100%
+  );
+}
+
+.footer p {
+  font-family: "Prompt", sans-serif;
+  line-height: 1.8;
+  margin: 0;
+  text-align: center;
+}
+
+.footer .small {
+  font-size: 0.95rem;
+  color: #5f6c7b;
+  opacity: 0.85;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Footer responsive styles */
+@media (max-width: 768px) {
+  .footer {
+    padding: 1.75rem 0;
+    margin-top: 2rem;
+  }
+
+  .footer .small {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer {
+    padding: 1.5rem 0;
+    margin-top: 2rem;
+  }
+
+  .footer .small {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .footer br {
+    display: none;
+  }
+
+  .footer .small br:nth-child(2) {
+    display: block;
+    content: "";
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .footer {
+    padding: 1.25rem 0;
+  }
+
+  .footer .small {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
