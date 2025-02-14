@@ -217,6 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create the date picker instance
     const datePicker = new tempusDominus.TempusDominus(element, {
       display: {
+        viewMode: 'calendar',
         components: {
           decades: true,
           year: true,
@@ -227,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
           seconds: false
         },
         icons: {
-          type: 'icons', // Use Font Awesome icons
+          type: 'icons',
           time: 'fa fa-clock',
           date: 'fa fa-calendar',
           up: 'fa fa-arrow-up',
@@ -246,16 +247,18 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       localization: {
         locale: 'th',
-        format: 'dd/MM/yyyy'
+        format: 'dd/MM/yyyy',
+        dayViewHeaderFormat: { month: 'long', year: 'numeric' }, // Show full year in header
+        startOfTheWeek: 0
       },
       useCurrent: false
     });
 
-    // Handle date selection
+    // Handle date selection with 4-digit Buddhist Era year
     datePicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
       if (e.date) {
         const date = e.date;
-        // Convert to Buddhist Era
+        // Convert to Buddhist Era with 4 digits
         const buddhistYear = date.year + 543;
         const formattedDate = `${String(date.date).padStart(2, '0')}/${String(date.month + 1).padStart(2, '0')}/${buddhistYear}`;
         element.value = formattedDate;
