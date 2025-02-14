@@ -206,6 +206,78 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
   })
+
+  // Initialize date pickers
+  const dateFields = ['beg_pos_date', 'pos_lev_date', 'last_ins_date'];
+  
+  dateFields.forEach(fieldId => {
+    const element = document.getElementById(fieldId);
+    if (!element) return;
+
+    // Create the date picker instance
+    const datePicker = new tempusDominus.TempusDominus(element, {
+      display: {
+        components: {
+          decades: true,
+          year: true,
+          month: true,
+          date: true,
+          hours: false,
+          minutes: false,
+          seconds: false
+        },
+        icons: {
+          type: 'icons', // Use Font Awesome icons
+          time: 'fa fa-clock',
+          date: 'fa fa-calendar',
+          up: 'fa fa-arrow-up',
+          down: 'fa fa-arrow-down',
+          previous: 'fa fa-chevron-left',
+          next: 'fa fa-chevron-right',
+          today: 'fa fa-calendar-check',
+          clear: 'fa fa-trash',
+          close: 'fa fa-xmark'
+        },
+        buttons: {
+          today: true,
+          clear: true,
+          close: true
+        }
+      },
+      localization: {
+        locale: 'th',
+        format: 'dd/MM/yyyy'
+      },
+      useCurrent: false
+    });
+
+    // Handle date selection
+    datePicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
+      if (e.date) {
+        const date = e.date;
+        // Convert to Buddhist Era
+        const buddhistYear = date.year + 543;
+        const formattedDate = `${String(date.date).padStart(2, '0')}/${String(date.month + 1).padStart(2, '0')}/${buddhistYear}`;
+        element.value = formattedDate;
+        
+        // Trigger input event to validate
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+
+    // Handle calendar icon click
+    const toggleBtn = document.querySelector(`[data-target="#${fieldId}"]`);
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        datePicker.toggle();
+      });
+    }
+
+    // Store the picker instance on the element
+    element._datePicker = datePicker;
+  });
 })
 
 // --- Helper Functions ---
