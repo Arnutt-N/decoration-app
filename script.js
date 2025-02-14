@@ -214,6 +214,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const element = document.getElementById(fieldId);
     if (!element) return;
 
+    // ป้องกันการพิมพ์เองในช่องวันที่
+    element.readOnly = true;
+
     // Create the date picker instance
     const datePicker = new tempusDominus.TempusDominus(element, {
       display: {
@@ -248,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
       localization: {
         locale: 'th',
         format: 'dd/MM/yyyy',
-        dayViewHeaderFormat: { month: 'long', year: 'numeric' }, // Show full year in header
+        dayViewHeaderFormat: { month: 'long', year: 'numeric' },
         startOfTheWeek: 0
       },
       useCurrent: false
@@ -581,7 +584,6 @@ async function populateDropdowns() {
   updatePosType() // Start cascading updates
 }
 
-// --- Date Validation Function ---
 // --- Date Validation Function (with Moment.js) ---
 function isValidDate(dateString) {
   if (!dateString) return true // Allow empty
@@ -666,7 +668,6 @@ function validateForm() {
       if (
         !inputElement.value ||
         inputElement.value.trim() === ""
-        // ไม่ต้องเช็ค null ตรงนี้ เพราะไม่ใช่ last_ins_code
       ) {
         showError(inputElement, "กรุณากรอกข้อมูลในช่องนี้")
         isValid = false
@@ -697,7 +698,6 @@ function validateForm() {
   return isValid
 }
 
-// --- Main Calculation Function ---
 // --- Main Calculation Function ---
 async function calculateDecoration(formData) {
   const data = await fetchData()
