@@ -47,7 +47,7 @@
             "personal_type": "ข้าราชการ",
             "pos_type": "ทั่วไป",
             "pos_lev": "ปฏิบัติงาน",
-            "beg_pos_period": ">=5",
+            "beg_pos_period": ">=5,<10",
             "pos_lev_period": null,
             "salary": ">=10190",
             "salary5y": null,
