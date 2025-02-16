@@ -702,7 +702,7 @@ function validateForm() {
 async function calculateDecoration(formData) {
   const data = await fetchData()
   if (!data) {
-    return null // fetchData handles error display
+    return null
   }
 
   const {
@@ -717,32 +717,16 @@ async function calculateDecoration(formData) {
     salary5y_input,
   } = formData
 
-  // --- 1. Calculate service period and check minimum requirement ---
+  // --- 1. Calculate service period ---
   const currentYearBE = new Date().getFullYear() + 543
   const begPosYearBE = beg_pos_date_input
     ? parseInt(beg_pos_date_input.split("/")[2], 10)
     : 0
   const begPosPeriodYears = begPosYearBE ? currentYearBE - begPosYearBE : 0
 
-  // Find matching criteria in decoration data
-  const relevantItem = data.decorData.find(
-    (item) =>
-      item.personal_type === personal_type_input &&
-      (item.pos_type === pos_type_input ||
-        (item.pos_type === null && pos_type_input === "ไม่ระบุ")) &&
-      (item.pos_lev === pos_lev_input ||
-        (item.pos_lev === null && pos_lev_input === "ไม่ระบุ"))
-  )
+  // (Removed the early check for beg_pos_period.)
 
-  // Check beg_pos_period requirement only if specified in the data
-  if (relevantItem && relevantItem.beg_pos_period) {
-    const { min } = parsePeriod(relevantItem.beg_pos_period)
-    if (min !== null && begPosPeriodYears < min) {
-      return "คุณสมบัติไม่ถึงเกณฑ์"
-    }
-  }
-
-  // --- 2. Check for highest decoration ---
+  // --- 2. Check if highest decoration already awarded ---
   if (
     last_ins_code_name_full_input &&
     last_ins_code_name_full_input !== "null"
@@ -765,7 +749,7 @@ async function calculateDecoration(formData) {
     }
   }
 
-  // --- 3. Calculate periods ---
+  // --- 3. Calculate periods for pos_lev and last_ins ---
   const endDatePosLev = `28/05/${currentYearBE}`
   const endDateLastIns = `28/07/${currentYearBE}`
 
@@ -776,12 +760,12 @@ async function calculateDecoration(formData) {
     ? calculatePeriodInYears(last_ins_date_input, endDateLastIns)
     : null
 
-  // --- 4. Get highest possible order ---
+  // --- 4. Get highest possible decoration order for the selected level ---
   const highestOrders = getHighestOrders(data)
   const highestOrderOfPosLev =
     highestOrders[pos_type_input + pos_lev_input] || 0
 
-  // --- 5. Check consecutive years ---
+  // --- 5. Check if decoration was already requested in consecutive years ---
   if (last_ins_date_input) {
     const lastInsYearBE = parseInt(last_ins_date_input.split("/")[2], 10)
     if (lastInsYearBE + 1 === currentYearBE) {
@@ -796,7 +780,14 @@ async function calculateDecoration(formData) {
     if (item.pos_type !== null && item.pos_type !== pos_type_input) return false
     if (item.pos_lev !== null && item.pos_lev !== pos_lev_input) return false
 
-    // Period and salary checks (only if specified in criteria)
+    // **** NEW: Check that service period satisfies the rule's beg_pos_period condition ****
+    if (
+      item.beg_pos_period &&
+      !checkPeriodCondition(begPosPeriodYears, item.beg_pos_period)
+    )
+      return false
+
+    // Additional period and salary checks (if specified)
     if (
       item.pos_lev_period &&
       !checkPosLevPeriodCondition(
@@ -809,8 +800,6 @@ async function calculateDecoration(formData) {
       return false
     if (item.salary5y && !checkSalary5yCondition(salary5y_input, item.salary5y))
       return false
-
-    // Check last_ins_period only if specified in criteria
     if (
       item.last_ins_period &&
       !checkLastInsPeriodCondition(
@@ -820,7 +809,7 @@ async function calculateDecoration(formData) {
     )
       return false
 
-    // Special handling for last_ins_code
+    // Special handling for last decoration received
     if (
       last_ins_code_name_full_input === "null" ||
       !last_ins_code_name_full_input
@@ -838,15 +827,14 @@ async function calculateDecoration(formData) {
     }
   })
 
-  // --- 7. Select appropriate decoration ---
+  // --- 7. Select the appropriate decoration from eligible ones ---
   let selectedDecoration = null
   if (filteredData.length > 0) {
-    // Sort by ins_code_order to get the next eligible decoration
     filteredData.sort((a, b) => a.ins_code_order - b.ins_code_order)
     selectedDecoration = filteredData[0]
   }
 
-  // --- 8. Return result ---
+  // --- 8. Return the result ---
   if (selectedDecoration) {
     return (
       "เครื่องราชอิสริยาภรณ์ชั้นถัดไป: " + selectedDecoration.ins_code_name_full
@@ -855,3 +843,4 @@ async function calculateDecoration(formData) {
     return "คุณสมบัติไม่ถึงเกณฑ์"
   }
 }
+
