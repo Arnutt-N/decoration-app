@@ -59,8 +59,8 @@ body {
 }
 
 .col-12 .card {
-  width: 90%;        /* หรือค่าตามต้องการ */
-  margin: 0 auto;    /* จัดให้อยู่กึ่งกลาง */
+  width: 90%; /* หรือค่าตามต้องการ */
+  margin: 0 auto; /* จัดให้อยู่กึ่งกลาง */
 }
 
 .card:hover {
@@ -71,6 +71,9 @@ body {
 /* Section title styling */
 .section-title {
   color: var(--primary-blue);
+  display: flex; /* ทำให้ h2 เป็น flex container */
+  justify-content: space-between; /* จัดข้อความชิดซ้าย ลิงก์ชิดขวา */
+  align-items: center; /* จัดกึ่งกลางแนวตั้ง */
   font-size: 1.5rem;
   margin-bottom: 1rem;
   border-bottom: 3px solid var(--primary-blue);
@@ -165,6 +168,24 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.back-to-form {
+  font-size: 1.1rem;
+  color: #2980b9; /* Navy Blue */
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.back-to-form i {
+  font-size: 1.2rem;
+  /* ไม่มีการเคลื่อนไหวเมื่อ hover */
+}
+
+.back-to-form:hover {
+  color: #3498db;
+}
+
 /* Footer styling with Bootstrap integration */
 .footer {
   background: linear-gradient(135deg, #1a5f7a 0%, #2980b9 50%, #3498db 100%);
@@ -250,4 +271,3 @@ body {
     max-width: 1400px !important;
   }
 }
-
