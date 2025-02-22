@@ -1,108 +1,239 @@
 /* checklists.css */
 
-* {
-  box-sizing: border-box;
+/* Import Google Font "Prompt" for Thai typography */
+@import url("https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap");
+
+/* Custom variables for consistency with Bootstrap */
+:root {
+  --primary-blue: #003366;
+  --light-blue: #e6f3ff;
+  --gray-background: #f5f7fa;
+  --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Apply Prompt font to the entire body */
 body {
-  font-family: 'Prompt', sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
+  font-family: "Prompt", sans-serif;
+  background-color: var(--gray-background);
   color: #333;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
-header {
-  background-color: #003366;
+/* Navbar styling with Bootstrap integration */
+.navbar {
+  background: linear-gradient(135deg, #1a5f7a 0%, #2980b9 50%, #3498db 100%);
   color: #fff;
-  padding: 20px;
+  padding: 1rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   text-align: center;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 24px;
+/* ลบ display: inline-block และปรับให้เป็น block เพื่อแยกบรรทัด */
+.navbar h1 {
+  margin-bottom: 0.5rem; /* ปรับระยะห่างระหว่าง h1 และ h3 */
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: block;
 }
 
-main {
-  padding: 20px;
-}
-
-section {
-  margin-bottom: 40px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-section h2 {
+.navbar h3 {
   margin-top: 0;
-  font-size: 20px;
-  border-bottom: 2px solid #003366;
-  padding-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 400;
+  opacity: 0.9;
+  display: block;
 }
 
-.search-input {
-  margin-bottom: 15px;
-  padding: 8px;
+/* Card styling with Bootstrap card class */
+.card {
+  background: #fff;
+  border-radius: 0.8rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-0.5rem);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Section title styling */
+.section-title {
+  color: var(--primary-blue);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 3px solid var(--primary-blue);
+  padding-bottom: 0.5rem;
+}
+
+/* Search input styling, overriding Bootstrap if needed */
+.search-wrapper .form-control {
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 0.8rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-wrapper .form-control:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 8px rgba(0, 51, 102, 0.3);
+}
+
+/* Table styling with Bootstrap table classes */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
   width: 100%;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  min-width: 300px;
+  margin-top: 1rem;
+  background: #fff;
+  border-radius: 0.8rem;
+  overflow: hidden;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+.table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+  font-size: 1rem;
 }
 
-table, th, td {
-  border: 1px solid #ccc;
-}
-
-th, td {
-  padding: 10px;
-
-}
-
-/* Center align header row cells */
-th {
+.table th {
+  padding: 1rem;
   background-color: #e0e0e0;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1rem;
 }
 
-/* จัดกึ่งกลางเฉพาะคอลัมน์ "ลำดับ" (2nd), "เริ่มต้นขอ" (5th) และ "เลื่อนได้ถึง" (6th) */
-table th:nth-child(2),
-table th:nth-child(5),
-table th:nth-child(6),
-table td:nth-child(2),
-table td:nth-child(5),
-table td:nth-child(6) {
+/* ปรับขนาดคอลัมน์ */
+
+/* คอลัมน์ "ลำดับ" (คอลัมน์ที่ 2) ให้แคบลง */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 50px;
   text-align: center;
 }
 
-/* สำหรับคอลัมน์ "เริ่มต้นขอ" และ "เลื่อนได้ถึง" ป้องกันการ wrap text */
-table th:nth-child(5),
-table th:nth-child(6),
-table td:nth-child(5),
-table td:nth-child(6) {
+/* คอลัมน์ "เงื่อนไขและระยะเวลาการขอพระราชทาน" (คอลัมน์ที่ 7) ให้กว้างขึ้น */
+.table th:nth-child(7),
+.table td:nth-child(7) {
+  min-width: 250px;
+}
+
+/* Center align specific columns */
+.table th:nth-child(5),
+.table th:nth-child(6),
+.table td:nth-child(5),
+.table td:nth-child(6) {
+  text-align: center;
+}
+
+/* Prevent wrapping for date columns */
+.table th:nth-child(5),
+.table th:nth-child(6),
+.table td:nth-child(5),
+.table td:nth-child(6) {
   white-space: nowrap;
 }
 
-tr:nth-child(even) {
+.table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-footer {
-  background-color: #003366;
-  color: #fff;
-  text-align: center;
-  padding: 10px;
+.table tbody tr:hover {
+  background-color: var(--light-blue);
+  transition: background-color 0.3s ease;
 }
 
-/* New rule: center align cells that have a "-" value.
-   (Add the "center-dash" class via JavaScript when needed) */
-.center-dash {
+/* Footer styling with Bootstrap integration */
+.footer {
+  background: linear-gradient(135deg, #1a5f7a 0%, #2980b9 50%, #3498db 100%);
+  color: #fff;
   text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 0.5rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* Loading Animation */
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--primary-blue);
+  font-size: 1.1rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Adjustments (Bootstrap handles most, but we add custom tweaks) */
+@media (max-width: 576px) {
+  .navbar h1 {
+    font-size: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+
+  .footer {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar h1 {
+    font-size: 1.8rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .card {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    padding: 0 2rem;
+  }
 }

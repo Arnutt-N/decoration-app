@@ -3,94 +3,135 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>รายการตรวจสอบตามประเภทบุคลากร</title>
     <!-- Import Google Font "Prompt" -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="checklists.css">
 </head>
 
 <body>
     <header>
-        <h1>รายการตรวจสอบข้อมูลเพื่อขอพระราชทานเครื่องราชอิสริยาภรณ์ ประจำปี <span id="year_now"></span></h1>
+        <nav class="navbar">
+            <div class="container text-center py-2">
+                <h1 class="my-0 mx-auto">รายการตรวจสอบข้อมูลเพื่อขอพระราชทานเครื่องราชอิสริยาภรณ์ ประจำปี <span id="year_now"></span> ✨
+                </h1>
+                <h3 class="mt-3 mx-auto"> 
+                    (บัญชี 15 ข้าราชการ บัญชี 25 ลูกจ้างประจำ และบัญชี 26 พนักงานราชการ)
+                </h3>
+            </div>
+        </nav>
     </header>
-    <main>
-        <!-- Section for ข้าราชการ -->
-        <section id="section-officials">
-            <h2>ข้าราชการ</h2>
-            <input type="text" id="searchOfficial" class="search-input" placeholder="ค้นหา..."
-                onkeyup="filterTable(this, 'tableOfficial')">
-            <table id="tableOfficial">
-                <thead>
-                    <tr>
-                        <th style="display:none;">id</th>
-                        <th>ลำดับ</th>
-                        <th>ประเภท</th>
-                        <th>ระดับ</th>
-                        <th>เริ่มต้นขอ</th>
-                        <th>เลื่อนได้ถึง</th>
-                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
-                        <th>หมายเหตุ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be dynamically inserted -->
-                </tbody>
-            </table>
-        </section>
+    <main class="container py-4">
+        <div class="row g-3">
+            <!-- Section for ข้าราชการ -->
+            <div class="col-12">
+                <section class="card">
+                    <div class="card-body">
+                        <h2 class="section-title mb-3">ข้าราชการ 🧑‍💼</h2>
+                        <div class="search-wrapper mb-3">
+                            <input type="text" id="searchOfficial" class="form-control" placeholder="ค้นหาข้าราชการ..."
+                                onkeyup="filterTable(this, 'tableOfficial')">
+                        </div>
+                        <div class="table-responsive">
+                            <table id="tableOfficial" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="display:none;">id</th>
+                                        <th>ลำดับ</th>
+                                        <th>ประเภท</th>
+                                        <th>ระดับ</th>
+                                        <th>เริ่มต้นขอ</th>
+                                        <th>เลื่อนได้ถึง</th>
+                                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
+                                        <th>หมายเหตุ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically inserted -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-        <!-- Section for ลูกจ้างประจำ -->
-        <section id="section-employee">
-            <h2>ลูกจ้างประจำ</h2>
-            <input type="text" id="searchEmployee" class="search-input" placeholder="ค้นหา..."
-                onkeyup="filterTable(this, 'tableEmployee')">
-            <table id="tableEmployee">
-                <thead>
-                    <tr>
-                        <th style="display:none;">id</th>
-                        <th>ลำดับ</th>
-                        <th>ประเภทตำแหน่ง</th>
-                        <th>ระดับ</th>
-                        <th>เริ่มต้นขอ</th>
-                        <th>เลื่อนได้ถึง</th>
-                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
-                        <th>หมายเหตุ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be dynamically inserted -->
-                </tbody>
-            </table>
-        </section>
+            <!-- Section for ลูกจ้างประจำ -->
+            <div class="col-12">
+                <section class="card">
+                    <div class="card-body">
+                        <h2 class="section-title mb-3">ลูกจ้างประจำ 🧑‍🔧</h2>
+                        <div class="search-wrapper mb-3">
+                            <input type="text" id="searchEmployee" class="form-control"
+                                placeholder="ค้นหาลูกจ้างประจำ..." onkeyup="filterTable(this, 'tableEmployee')">
+                        </div>
+                        <div class="table-responsive">
+                            <table id="tableEmployee" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="display:none;">id</th>
+                                        <th>ลำดับ</th>
+                                        <th>ประเภทตำแหน่ง</th>
+                                        <th>ระดับ</th>
+                                        <th>เริ่มต้นขอ</th>
+                                        <th>เลื่อนได้ถึง</th>
+                                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
+                                        <th>หมายเหตุ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically inserted -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-        <!-- Section for พนักงานราชการ -->
-        <section id="section-civil">
-            <h2>พนักงานราชการ</h2>
-            <input type="text" id="searchCivil" class="search-input" placeholder="ค้นหา..."
-                onkeyup="filterTable(this, 'tableCivil')">
-            <table id="tableCivil">
-                <thead>
-                    <tr>
-                        <th style="display:none;">id</th>
-                        <th>ลำดับ</th>
-                        <th>ประเภทตำแหน่ง</th>
-                        <th>ระดับ</th>
-                        <th>เริ่มต้นขอ</th>
-                        <th>เลื่อนได้ถึง</th>
-                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
-                        <th>หมายเหตุ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be dynamically inserted -->
-                </tbody>
-            </table>
-        </section>
+            <!-- Section for พนักงานราชการ -->
+            <div class="col-12">
+                <section class="card">
+                    <div class="card-body">
+                        <h2 class="section-title mb-3">พนักงานราชการ 🧑‍🏫</h2>
+                        <div class="search-wrapper mb-3">
+                            <input type="text" id="searchCivil" class="form-control" placeholder="ค้นหาพนักงานราชการ..."
+                                onkeyup="filterTable(this, 'tableCivil')">
+                        </div>
+                        <div class="table-responsive">
+                            <table id="tableCivil" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="display:none;">id</th>
+                                        <th>ลำดับ</th>
+                                        <th>ประเภทตำแหน่ง</th>
+                                        <th>ระดับ</th>
+                                        <th>เริ่มต้นขอ</th>
+                                        <th>เลื่อนได้ถึง</th>
+                                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
+                                        <th>หมายเหตุ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be dynamically inserted -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
     </main>
-    <footer>
-        <p>&copy; 2568 Decoration Check App</p>
+    <footer class="footer py-3">
+        <div class="container">
+            <p class="mb-0">© 2568 Decoration Check App | <a href="#contact">ติดต่อเรา</a> | <a
+                    href="#privacy">นโยบายความเป็นส่วนตัว</a></p>
+        </div>
     </footer>
     <script src="checklists.js"></script>
 </body>
