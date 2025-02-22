@@ -1,0 +1,108 @@
+/* checklists.css */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background-color: #003366;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+main {
+  padding: 20px;
+}
+
+section {
+  margin-bottom: 40px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  border-bottom: 2px solid #003366;
+  padding-bottom: 10px;
+}
+
+.search-input {
+  margin-bottom: 15px;
+  padding: 8px;
+  width: 100%;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
+
+}
+
+/* Center align header row cells */
+th {
+  background-color: #e0e0e0;
+}
+
+/* จัดกึ่งกลางเฉพาะคอลัมน์ "ลำดับ" (2nd), "เริ่มต้นขอ" (5th) และ "เลื่อนได้ถึง" (6th) */
+table th:nth-child(2),
+table th:nth-child(5),
+table th:nth-child(6),
+table td:nth-child(2),
+table td:nth-child(5),
+table td:nth-child(6) {
+  text-align: center;
+}
+
+/* สำหรับคอลัมน์ "เริ่มต้นขอ" และ "เลื่อนได้ถึง" ป้องกันการ wrap text */
+table th:nth-child(5),
+table th:nth-child(6),
+table td:nth-child(5),
+table td:nth-child(6) {
+  white-space: nowrap;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+footer {
+  background-color: #003366;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+}
+
+/* New rule: center align cells that have a "-" value.
+   (Add the "center-dash" class via JavaScript when needed) */
+.center-dash {
+  text-align: center;
+}

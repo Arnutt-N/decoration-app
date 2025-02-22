@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการตรวจสอบตามประเภทบุคลากร</title>
+    <!-- Import Google Font "Prompt" -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="checklists.css">
+</head>
+
+<body>
+    <header>
+        <h1>รายการตรวจสอบข้อมูลเพื่อขอพระราชทานเครื่องราชอิสริยาภรณ์ ประจำปี <span id="year_now"></span></h1>
+    </header>
+    <main>
+        <!-- Section for ข้าราชการ -->
+        <section id="section-officials">
+            <h2>ข้าราชการ</h2>
+            <input type="text" id="searchOfficial" class="search-input" placeholder="ค้นหา..."
+                onkeyup="filterTable(this, 'tableOfficial')">
+            <table id="tableOfficial">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id</th>
+                        <th>ลำดับ</th>
+                        <th>ประเภท</th>
+                        <th>ระดับ</th>
+                        <th>เริ่มต้นขอ</th>
+                        <th>เลื่อนได้ถึง</th>
+                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
+                        <th>หมายเหตุ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically inserted -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Section for ลูกจ้างประจำ -->
+        <section id="section-employee">
+            <h2>ลูกจ้างประจำ</h2>
+            <input type="text" id="searchEmployee" class="search-input" placeholder="ค้นหา..."
+                onkeyup="filterTable(this, 'tableEmployee')">
+            <table id="tableEmployee">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id</th>
+                        <th>ลำดับ</th>
+                        <th>ประเภทตำแหน่ง</th>
+                        <th>ระดับ</th>
+                        <th>เริ่มต้นขอ</th>
+                        <th>เลื่อนได้ถึง</th>
+                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
+                        <th>หมายเหตุ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically inserted -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Section for พนักงานราชการ -->
+        <section id="section-civil">
+            <h2>พนักงานราชการ</h2>
+            <input type="text" id="searchCivil" class="search-input" placeholder="ค้นหา..."
+                onkeyup="filterTable(this, 'tableCivil')">
+            <table id="tableCivil">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id</th>
+                        <th>ลำดับ</th>
+                        <th>ประเภทตำแหน่ง</th>
+                        <th>ระดับ</th>
+                        <th>เริ่มต้นขอ</th>
+                        <th>เลื่อนได้ถึง</th>
+                        <th>เงื่อนไขและระยะเวลาการขอพระราชทาน</th>
+                        <th>หมายเหตุ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically inserted -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2568 Decoration Check App</p>
+    </footer>
+    <script src="checklists.js"></script>
+</body>
+
+</html>
