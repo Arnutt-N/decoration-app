@@ -6,6 +6,12 @@
 
 ---
 
+## 🔗 ลิงก์ (Links)
+
+* **Source Code:** [https://github.com/Arnutt-N/decoration-app](https://github.com/Arnutt-N/decoration-app)
+
+---
+
 ## ✨ คุณสมบัติหลัก (Features)
 
 * **ระบบตรวจสอบสิทธิ์ (Eligibility Calculator)**: หน้าหลักของแอปพลิเคชันที่ผู้ใช้สามารถกรอกข้อมูลเพื่อคำนวณสิทธิ์ของตนเองได้ทันที
