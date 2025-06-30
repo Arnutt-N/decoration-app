@@ -22,3 +22,8 @@ prepare query data.docx
 ~WRL0003.tmp
 script.html
 .vercel
+
+# Test files and folders - not for production
+test/
+test_cases.html
+test_cases.js
