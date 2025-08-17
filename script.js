@@ -257,19 +257,37 @@ document.addEventListener("DOMContentLoaded", function () {
       useCurrent: false
     });
 
-    // Handle date selection with 4-digit Buddhist Era year
+    // Handle date selection with Buddhist Era year conversion
     datePicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
       if (e.date) {
         const date = e.date;
-        // Convert to Buddhist Era with 4 digits
-        const buddhistYear = date.year + 543;
+        
+        // Convert to Buddhist Era year
+        // Tempus Dominus with 'th' locale may return either CE or BE years
+        // Ensure consistent conversion to Buddhist Era
+        let buddhistYear;
+        if (date.year < 2500) {
+          // Christian Era year - convert to Buddhist Era
+          buddhistYear = date.year + 543;
+        } else {
+          // Already Buddhist Era year
+          buddhistYear = date.year;
+        }
+        
+        // Format date as DD/MM/YYYY (Buddhist Era)
         const formattedDate = `${String(date.date).padStart(2, '0')}/${String(date.month + 1).padStart(2, '0')}/${buddhistYear}`;
+        
+        // Update input field
         element.value = formattedDate;
         
-        // Trigger input event to validate
+        // Trigger validation
         element.dispatchEvent(new Event('input', { bubbles: true }));
+      } else if (e.isClear) {
+        // Clear the input field when picker is cleared
+        element.value = '';
       }
     });
+
 
     // Handle calendar icon click
     const toggleBtn = document.querySelector(`[data-target="#${fieldId}"]`);
@@ -612,6 +630,114 @@ function resetForm() {
   // Reset last_ins_code as well
   document.getElementById("last_ins_code").value = "" // Set to default empty value.
   document.getElementById("last_ins_code").dispatchEvent(new Event("change")) // Trigger the change.
+
+  // Refresh date pickers to maintain Buddhist Era display after form reset
+  refreshDatePickers()
+}
+
+// Function to refresh date picker instances after form reset
+function refreshDatePickers() {
+  const dateFields = ['beg_pos_date', 'pos_lev_date', 'last_ins_date'];
+  
+  dateFields.forEach(fieldId => {
+    const element = document.getElementById(fieldId);
+    if (element && element._datePicker) {
+      // Clear the input field
+      element.value = '';
+      
+      // Dispose the old picker instance
+      element._datePicker.dispose();
+      
+      // Reinitialize the date picker with the same configuration
+      const datePicker = new tempusDominus.TempusDominus(element, {
+        display: {
+          viewMode: 'calendar',
+          components: {
+            decades: true,
+            year: true,
+            month: true,
+            date: true,
+            hours: false,
+            minutes: false,
+            seconds: false
+          },
+          icons: {
+            type: 'icons',
+            time: 'fa fa-clock',
+            date: 'fa fa-calendar',
+            up: 'fa fa-arrow-up',
+            down: 'fa fa-arrow-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-calendar-check',
+            clear: 'fa fa-trash',
+            close: 'fa fa-xmark'
+          },
+          buttons: {
+            today: true,
+            clear: true,
+            close: true
+          }
+        },
+        localization: {
+          locale: 'th',
+          format: 'dd/MM/yyyy',
+          dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+          startOfTheWeek: 0
+        },
+        useCurrent: false
+      });
+
+      // Handle date selection with Buddhist Era year conversion
+      datePicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
+        if (e.date) {
+          const date = e.date;
+          
+          // Convert to Buddhist Era year
+          // Tempus Dominus with 'th' locale may return either CE or BE years
+          // Ensure consistent conversion to Buddhist Era
+          let buddhistYear;
+          if (date.year < 2500) {
+            // Christian Era year - convert to Buddhist Era
+            buddhistYear = date.year + 543;
+          } else {
+            // Already Buddhist Era year
+            buddhistYear = date.year;
+          }
+          
+          // Format date as DD/MM/YYYY (Buddhist Era)
+          const formattedDate = `${String(date.date).padStart(2, '0')}/${String(date.month + 1).padStart(2, '0')}/${buddhistYear}`;
+          
+          // Update input field
+          element.value = formattedDate;
+          
+          // Trigger validation
+          element.dispatchEvent(new Event('input', { bubbles: true }));
+        } else if (e.isClear) {
+          // Clear the input field when picker is cleared
+          element.value = '';
+        }
+      });
+
+      // Handle calendar icon click
+      const toggleBtn = document.querySelector(`[data-target="#${fieldId}"]`);
+      if (toggleBtn) {
+        // Remove existing event listeners by cloning the element
+        const newToggleBtn = toggleBtn.cloneNode(true);
+        toggleBtn.parentNode.replaceChild(newToggleBtn, toggleBtn);
+        
+        // Add fresh event listener
+        newToggleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          datePicker.toggle();
+        });
+      }
+
+      // Store the new picker instance on the element
+      element._datePicker = datePicker;
+    }
+  });
 }
 // --- Clear All Error Messages ---
 function clearAllErrors() {

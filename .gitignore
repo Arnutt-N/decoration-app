@@ -1,29 +1,113 @@
+# =============================================================================
+# Thai Royal Decoration App - .gitignore
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Development & Build Artifacts
+# -----------------------------------------------------------------------------
+.vercel/
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# -----------------------------------------------------------------------------
+# Operating System Files
+# -----------------------------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.Trash-*
+
+# -----------------------------------------------------------------------------
+# Temporary & Backup Files
+# -----------------------------------------------------------------------------
 *.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
 ~$*
+.#*
+
+# -----------------------------------------------------------------------------
+# Microsoft Office Temporary Files
+# -----------------------------------------------------------------------------
 *.docx
 *.doc
 *.xlsx
 *.xls
-index-001.html
-index-002.html
-index-003.html
-index-004.html
-style-001.css
-style-002.css
-style-003.css
-style-004.css
-script-001.js
-script-002.js
-script-003.js
-script-004.js
-prepare query data.docx
-2568.02.05-decorationData.json
-2568.02.08_dacorationData.json
-~WRL0003.tmp
-script.html
-.vercel
+*.pptx
+*.ppt
+~$*.doc*
+~$*.xls*
+~$*.ppt*
 
-# Test files and folders - not for production
+# -----------------------------------------------------------------------------
+# Project Development Files (Not for Production)
+# -----------------------------------------------------------------------------
+# Version-numbered backup files
+index-[0-9][0-9][0-9].html
+style-[0-9][0-9][0-9].css
+script-[0-9][0-9][0-9].js
+*-[0-9][0-9][0-9].*
+
+# Development data files
+2568.*.json
+*_backup.json
+*_old.json
+
+# -----------------------------------------------------------------------------
+# Documentation & Planning (Development Only)
+# -----------------------------------------------------------------------------
+# Project documentation and planning
+project-log-md/
+archives/
+research/
+examples/
+PRPs/
+scripts/
+
+# Development notes and analysis
+INITIAL.md
+*.analysis.md
+*-analysis.md
+*-notes.md
+
+# -----------------------------------------------------------------------------
+# Testing (Not for Production)
+# -----------------------------------------------------------------------------
 test/
 test_cases.html
 test_cases.js
+*test*.html
+*test*.js
+
+# -----------------------------------------------------------------------------
+# Claude Code Development Assistant
+# -----------------------------------------------------------------------------
+.claude/
+
+# -----------------------------------------------------------------------------
+# Personal Development Files
+# -----------------------------------------------------------------------------
+# Specific development files that shouldn't be committed
+prepare query data.docx
+script.html
