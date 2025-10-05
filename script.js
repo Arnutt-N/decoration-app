@@ -157,15 +157,32 @@ function setupDatePickerForElement(element) {
     useCurrent: false,
   });
 
+  // Enhanced same-date protection
+  element._isSameDateOperation = false;
+  element._sameDateEndTime = 0;
+  element._expectedBE = '';
+
   datePicker.subscribe(tempusDominus.Namespace.events.change, (event) => {
     // Same-date detection - prevent unnecessary updates
     if (event.date && element._storedDate) {
       if (isSameDateSelected(element._storedDate, event.date)) {
-        // Same date selected - no update needed
-        // Polling mechanism will handle any CE format that picker writes
+        // Same date selected - set protection and expected BE value
+        element._isSameDateOperation = true;
+        element._sameDateEndTime = Date.now() + 3000; // 3 seconds protection
+        element._expectedBE = formatDateAsBuddhist(element._storedDate);
+
+        // Immediately set BE format
+        if (element.value !== element._expectedBE) {
+          element.value = element._expectedBE;
+        }
+
         return;
       }
     }
+
+    // Clear same-date protection for new dates
+    element._isSameDateOperation = false;
+    element._sameDateEndTime = 0;
 
     if (event.date) {
       const normalizedDate = normalizePickerDate(event.date);
@@ -205,26 +222,109 @@ function setupDatePickerForElement(element) {
     }
   });
 
-  // CRITICAL FIX: Watch for picker writing CE format directly to input
-  // The picker uses .value = directly which bypasses event handlers
-  // Use polling to detect and correct CE format writes
-  let lastValue = element.value;
-  setInterval(() => {
-    if (element.value !== lastValue) {
-      lastValue = element.value;
+  // REVOLUTIONARY FIX: Pre-emptively override picker's value writing mechanism
+  // Hook into the picker's internal methods before they can write CE format
 
-      // Check if input has CE format but we have a stored date
-      if (element._storedDate && element.value) {
+  // Store original methods
+  const originalSetValue = datePicker.dates.setValue;
+  const originalWriteDateToInput = writeDateToInput;
+
+  // Override the picker's setValue method to prevent CE format
+  datePicker.dates.setValue = function(...args) {
+    const result = originalSetValue.apply(this, args);
+
+    // Immediately after picker sets value, restore BE format
+    setTimeout(() => {
+      if (element._storedDate) {
         const expectedBE = formatDateAsBuddhist(element._storedDate);
-
         if (element.value !== expectedBE) {
-          // Picker wrote CE format - restore BE format
-          element.value = expectedBE;
-          lastValue = expectedBE;
+          // Use direct assignment to avoid triggering picker again
+          const originalSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+          originalSetter.call(element, expectedBE);
         }
       }
+    }, 0);
+
+    return result;
+  };
+
+  // Override writeDateToInput to prevent CE format during same-date operations
+  window.writeDateToInput = function(inputElement, date, options = {}) {
+    if (inputElement === element && element._isSameDateOperation && date) {
+      // During same-date operations, only write the expected BE format
+      const expectedBE = formatDateAsBuddhist(date);
+      if (inputElement.value !== expectedBE) {
+        const originalSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+        originalSetter.call(inputElement, expectedBE);
+
+        // Don't dispatch events during same-date operations to avoid triggering picker
+        if (options.dispatchInput !== false) {
+          setTimeout(() => {
+            inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+          }, 10);
+        }
+      }
+      return;
     }
-  }, 50); // Check every 50ms
+
+    // Use original function for normal operations
+    return originalWriteDateToInput(inputElement, date, options);
+  };
+
+  // CONTINUOUS MONITORING: Lightweight real-time monitoring
+  let lastValue = element.value;
+  let monitoringInterval = null;
+
+  const startMonitoring = () => {
+    if (monitoringInterval) return;
+
+    monitoringInterval = setInterval(() => {
+      const now = Date.now();
+      const isInSameDateProtection = element._isSameDateOperation && now < element._sameDateEndTime;
+
+      if (element.value !== lastValue) {
+        lastValue = element.value;
+
+        // Check if CE format appeared
+        if (element._storedDate && element.value) {
+          const yearMatch = element.value.match(/(\d{4})$/);
+
+          if (yearMatch && parseInt(yearMatch[1]) < 2400) {
+            // Immediately restore BE format
+            const targetBE = isInSameDateProtection ? element._expectedBE : formatDateAsBuddhist(element._storedDate);
+
+            if (element.value !== targetBE) {
+              const originalSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+              originalSetter.call(element, targetBE);
+              lastValue = targetBE;
+            }
+          }
+        }
+      }
+
+      // Extra protection during same-date operations
+      if (isInSameDateProtection && element._expectedBE && element.value !== element._expectedBE) {
+        const originalSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+        originalSetter.call(element, element._expectedBE);
+        lastValue = element._expectedBE;
+      }
+
+    }, 16); // ~60fps monitoring
+  };
+
+  const stopMonitoring = () => {
+    if (monitoringInterval) {
+      clearInterval(monitoringInterval);
+      monitoringInterval = null;
+    }
+  };
+
+  // Start monitoring
+  startMonitoring();
+
+  // Store monitoring reference for cleanup
+  element._monitoringInterval = monitoringInterval;
+  element._stopMonitoring = stopMonitoring;
 
   const toggleSelector = `[data-target="#${element.id}"]`;
   const toggleBtn = document.querySelector(toggleSelector);
@@ -828,12 +928,21 @@ function refreshDatePickers() {
       return;
     }
 
+    // Clean up monitoring interval if it exists
+    if (element._stopMonitoring) {
+      element._stopMonitoring();
+      element._stopMonitoring = null;
+    }
+
     if (element._datePicker) {
       element._datePicker.dispose();
     }
 
     element.value = '';
     element._storedDate = null;
+    element._isSameDateOperation = false;
+    element._sameDateEndTime = 0;
+    element._expectedBE = '';
 
     setupDatePickerForElement(element);
   });

@@ -111,3 +111,11 @@ test_cases.js
 # Specific development files that shouldn't be committed
 prepare query data.docx
 script.html
+
+# -----------------------------------------------------------------------------
+# Sensitive Files
+# -----------------------------------------------------------------------------
+# Shell scripts with API keys or sensitive configuration
+*.sh
+*setup*
+*install*
