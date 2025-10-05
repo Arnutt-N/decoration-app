@@ -1,3 +1,248 @@
+function toGregorianYear(year) {
+  if (typeof year !== 'number' || Number.isNaN(year)) {
+    return null;
+  }
+  return year >= 2400 ? year - 543 : year;
+}
+
+function toBuddhistYear(year) {
+  if (typeof year !== 'number' || Number.isNaN(year)) {
+    return null;
+  }
+  return year >= 2400 ? year : year + 543;
+}
+
+function normalizePickerDate(pickerDate) {
+  if (!pickerDate) return null;
+
+  const getPart = (part) => {
+    const value = pickerDate[part];
+    if (typeof value === 'number') {
+      return value;
+    }
+    if (typeof value === 'function') {
+      try {
+        return value.call(pickerDate);
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const rawYear = getPart('year');
+  const rawMonth = getPart('month');
+  const rawDate = getPart('date');
+
+  if (rawYear === null || rawMonth === null || rawDate === null) {
+    return null;
+  }
+
+  const gregorianYear = toGregorianYear(rawYear);
+  if (gregorianYear === null) {
+    return null;
+  }
+
+  return new Date(gregorianYear, rawMonth, rawDate);
+}
+
+function formatDateAsBuddhist(date) {
+  if (!(date instanceof Date)) {
+    return '';
+  }
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = toBuddhistYear(date.getFullYear());
+  if (year === null) {
+    return '';
+  }
+
+  return `${day}/${month}/${year}`;
+}
+
+function writeDateToInput(element, date, options = {}) {
+  if (!element) {
+    return;
+  }
+
+  const { dispatchInput = true } = options;
+
+  if (!date) {
+    element.value = '';
+    return;
+  }
+
+  const formattedDate = formatDateAsBuddhist(date);
+  if (!formattedDate) {
+    return;
+  }
+
+  element.value = formattedDate;
+  if (dispatchInput) {
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+/**
+ * Checks if the selected date is the same as the stored date
+ * Handles year normalization for CE vs BE year formats from Tempus Dominus
+ * @param {Date|null} storedDate - Previously stored Date object (CE format)
+ * @param {Object} eventDate - Event date object from Tempus Dominus
+ * @param {number} eventDate.year - Year (can be CE or BE)
+ * @param {number} eventDate.month - Month (0-11)
+ * @param {number} eventDate.date - Day (1-31)
+ * @returns {boolean} True if dates are the same
+ */
+function isSameDateSelected(storedDate, eventDate) {
+  if (!storedDate || !eventDate) {
+    return false;
+  }
+
+  // Normalize event year to CE for comparison
+  // Tempus Dominus may provide CE (2025) or BE (2568) year
+  let selectedYearCE = eventDate.year;
+  if (eventDate.year >= 2500) {
+    // Buddhist Era year - convert to CE
+    selectedYearCE = eventDate.year - 543;
+  }
+
+  // Compare all components
+  return storedDate.getFullYear() === selectedYearCE &&
+         storedDate.getMonth() === eventDate.month &&
+         storedDate.getDate() === eventDate.date;
+}
+
+function setupDatePickerForElement(element) {
+  if (!element) return null;
+
+  element.readOnly = true;
+
+  const datePicker = new tempusDominus.TempusDominus(element, {
+    display: {
+      viewMode: 'calendar',
+      components: {
+        decades: true,
+        year: true,
+        month: true,
+        date: true,
+        hours: false,
+        minutes: false,
+        seconds: false,
+      },
+      icons: {
+        type: 'icons',
+        time: 'fa fa-clock',
+        date: 'fa fa-calendar',
+        up: 'fa fa-arrow-up',
+        down: 'fa fa-arrow-down',
+        previous: 'fa fa-chevron-left',
+        next: 'fa fa-chevron-right',
+        today: 'fa fa-calendar-check',
+        clear: 'fa fa-trash',
+        close: 'fa fa-xmark',
+      },
+      buttons: {
+        today: true,
+        clear: true,
+        close: true,
+      },
+    },
+    localization: {
+      locale: 'th',
+      format: 'dd/MM/yyyy',
+      dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+      startOfTheWeek: 0,
+    },
+    useCurrent: false,
+  });
+
+  datePicker.subscribe(tempusDominus.Namespace.events.change, (event) => {
+    // Same-date detection - prevent unnecessary updates
+    if (event.date && element._storedDate) {
+      if (isSameDateSelected(element._storedDate, event.date)) {
+        // Same date selected - no update needed
+        // Polling mechanism will handle any CE format that picker writes
+        return;
+      }
+    }
+
+    if (event.date) {
+      const normalizedDate = normalizePickerDate(event.date);
+      if (normalizedDate) {
+        element._storedDate = normalizedDate;
+        writeDateToInput(element, normalizedDate);
+      }
+      return;
+    }
+
+    if (event.isClear) {
+      element._storedDate = null;
+      element.value = '';
+      return;
+    }
+
+    const fallbackDate = normalizePickerDate(event.oldDate) || element._storedDate;
+    if (fallbackDate) {
+      element._storedDate = fallbackDate;
+      writeDateToInput(element, fallbackDate);
+    }
+  });
+
+  datePicker.subscribe(tempusDominus.Namespace.events.show, () => {
+    const tempStoredDate = element._storedDate
+      ? new Date(element._storedDate.getTime())
+      : null;
+
+    datePicker.dates.clear();
+
+    if (tempStoredDate) {
+      element._storedDate = tempStoredDate;
+      datePicker.dates.setValue(tempusDominus.DateTime.convert(tempStoredDate));
+      // CRITICAL: dates.setValue() updates input with CE format
+      // Must restore BE format immediately after
+      writeDateToInput(element, tempStoredDate, { dispatchInput: false });
+    }
+  });
+
+  // CRITICAL FIX: Watch for picker writing CE format directly to input
+  // The picker uses .value = directly which bypasses event handlers
+  // Use polling to detect and correct CE format writes
+  let lastValue = element.value;
+  setInterval(() => {
+    if (element.value !== lastValue) {
+      lastValue = element.value;
+
+      // Check if input has CE format but we have a stored date
+      if (element._storedDate && element.value) {
+        const expectedBE = formatDateAsBuddhist(element._storedDate);
+
+        if (element.value !== expectedBE) {
+          // Picker wrote CE format - restore BE format
+          element.value = expectedBE;
+          lastValue = expectedBE;
+        }
+      }
+    }
+  }, 50); // Check every 50ms
+
+  const toggleSelector = `[data-target="#${element.id}"]`;
+  const toggleBtn = document.querySelector(toggleSelector);
+  if (toggleBtn) {
+    const replacement = toggleBtn.cloneNode(true);
+    toggleBtn.parentNode.replaceChild(replacement, toggleBtn);
+    replacement.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      datePicker.toggle();
+    });
+  }
+
+  element._datePicker = datePicker;
+  return datePicker;
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
   // --- Form Submission ---
   const form = document.getElementById("searchForm")
@@ -209,100 +454,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize date pickers
   const dateFields = ['beg_pos_date', 'pos_lev_date', 'last_ins_date'];
-  
-  dateFields.forEach(fieldId => {
+
+  dateFields.forEach((fieldId) => {
     const element = document.getElementById(fieldId);
     if (!element) return;
-
-    // ป้องกันการพิมพ์เองในช่องวันที่
-    element.readOnly = true;
-
-    // Create the date picker instance
-    const datePicker = new tempusDominus.TempusDominus(element, {
-      display: {
-        viewMode: 'calendar',
-        components: {
-          decades: true,
-          year: true,
-          month: true,
-          date: true,
-          hours: false,
-          minutes: false,
-          seconds: false
-        },
-        icons: {
-          type: 'icons',
-          time: 'fa fa-clock',
-          date: 'fa fa-calendar',
-          up: 'fa fa-arrow-up',
-          down: 'fa fa-arrow-down',
-          previous: 'fa fa-chevron-left',
-          next: 'fa fa-chevron-right',
-          today: 'fa fa-calendar-check',
-          clear: 'fa fa-trash',
-          close: 'fa fa-xmark'
-        },
-        buttons: {
-          today: true,
-          clear: true,
-          close: true
-        }
-      },
-      localization: {
-        locale: 'th',
-        format: 'dd/MM/yyyy',
-        dayViewHeaderFormat: { month: 'long', year: 'numeric' },
-        startOfTheWeek: 0
-      },
-      useCurrent: false
-    });
-
-    // Handle date selection with Buddhist Era year conversion
-    datePicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
-      if (e.date) {
-        const date = e.date;
-        
-        // Convert to Buddhist Era year
-        // Tempus Dominus with 'th' locale may return either CE or BE years
-        // Ensure consistent conversion to Buddhist Era
-        let buddhistYear;
-        if (date.year < 2500) {
-          // Christian Era year - convert to Buddhist Era
-          buddhistYear = date.year + 543;
-        } else {
-          // Already Buddhist Era year
-          buddhistYear = date.year;
-        }
-        
-        // Format date as DD/MM/YYYY (Buddhist Era)
-        const formattedDate = `${String(date.date).padStart(2, '0')}/${String(date.month + 1).padStart(2, '0')}/${buddhistYear}`;
-        
-        // Update input field
-        element.value = formattedDate;
-        
-        // Trigger validation
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-      } else if (e.isClear) {
-        // Clear the input field when picker is cleared
-        element.value = '';
-      }
-    });
-
-
-    // Handle calendar icon click
-    const toggleBtn = document.querySelector(`[data-target="#${fieldId}"]`);
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        datePicker.toggle();
-      });
-    }
-
-    // Store the picker instance on the element
-    element._datePicker = datePicker;
+    setupDatePickerForElement(element);
   });
-})
+});
 
 // --- Helper Functions ---
 
@@ -606,8 +764,33 @@ async function populateDropdowns() {
 function isValidDate(dateString) {
   if (!dateString) return true // Allow empty
 
-  // ใช้ Moment.js ตรวจสอบ
-  return moment(dateString, "DD/MM/YYYY", true).isValid()
+  // Enhanced validation for Buddhist Era dates
+  // Try parsing with Moment.js first (handles both CE and BE dates with 'th' locale)
+  if (moment(dateString, "DD/MM/YYYY", true).isValid()) {
+    return true
+  }
+
+  // Special handling for Buddhist Era dates
+  // Extract year to check if it's a Buddhist Era year
+  const dateParts = dateString.split('/')
+  if (dateParts.length !== 3) return false
+
+  const day = parseInt(dateParts[0], 10)
+  const month = parseInt(dateParts[1], 10)
+  const year = parseInt(dateParts[2], 10)
+
+  // Check basic validity of day, month, year
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return false
+  if (day < 1 || day > 31) return false
+  if (month < 1 || month > 12) return false
+  if (year < 2400) return false // Buddhist Era years start around 2400
+
+  // Convert Buddhist Era year to Christian Era for validation
+  const ceYear = year - 543
+  const ceDateString = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${ceYear}`
+
+  // Validate the converted Christian Era date
+  return moment(ceDateString, "DD/MM/YYYY", true).isValid()
 }
 
 // --- Reset Form Function ---
@@ -638,107 +821,24 @@ function resetForm() {
 // Function to refresh date picker instances after form reset
 function refreshDatePickers() {
   const dateFields = ['beg_pos_date', 'pos_lev_date', 'last_ins_date'];
-  
-  dateFields.forEach(fieldId => {
+
+  dateFields.forEach((fieldId) => {
     const element = document.getElementById(fieldId);
-    if (element && element._datePicker) {
-      // Clear the input field
-      element.value = '';
-      
-      // Dispose the old picker instance
-      element._datePicker.dispose();
-      
-      // Reinitialize the date picker with the same configuration
-      const datePicker = new tempusDominus.TempusDominus(element, {
-        display: {
-          viewMode: 'calendar',
-          components: {
-            decades: true,
-            year: true,
-            month: true,
-            date: true,
-            hours: false,
-            minutes: false,
-            seconds: false
-          },
-          icons: {
-            type: 'icons',
-            time: 'fa fa-clock',
-            date: 'fa fa-calendar',
-            up: 'fa fa-arrow-up',
-            down: 'fa fa-arrow-down',
-            previous: 'fa fa-chevron-left',
-            next: 'fa fa-chevron-right',
-            today: 'fa fa-calendar-check',
-            clear: 'fa fa-trash',
-            close: 'fa fa-xmark'
-          },
-          buttons: {
-            today: true,
-            clear: true,
-            close: true
-          }
-        },
-        localization: {
-          locale: 'th',
-          format: 'dd/MM/yyyy',
-          dayViewHeaderFormat: { month: 'long', year: 'numeric' },
-          startOfTheWeek: 0
-        },
-        useCurrent: false
-      });
-
-      // Handle date selection with Buddhist Era year conversion
-      datePicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
-        if (e.date) {
-          const date = e.date;
-          
-          // Convert to Buddhist Era year
-          // Tempus Dominus with 'th' locale may return either CE or BE years
-          // Ensure consistent conversion to Buddhist Era
-          let buddhistYear;
-          if (date.year < 2500) {
-            // Christian Era year - convert to Buddhist Era
-            buddhistYear = date.year + 543;
-          } else {
-            // Already Buddhist Era year
-            buddhistYear = date.year;
-          }
-          
-          // Format date as DD/MM/YYYY (Buddhist Era)
-          const formattedDate = `${String(date.date).padStart(2, '0')}/${String(date.month + 1).padStart(2, '0')}/${buddhistYear}`;
-          
-          // Update input field
-          element.value = formattedDate;
-          
-          // Trigger validation
-          element.dispatchEvent(new Event('input', { bubbles: true }));
-        } else if (e.isClear) {
-          // Clear the input field when picker is cleared
-          element.value = '';
-        }
-      });
-
-      // Handle calendar icon click
-      const toggleBtn = document.querySelector(`[data-target="#${fieldId}"]`);
-      if (toggleBtn) {
-        // Remove existing event listeners by cloning the element
-        const newToggleBtn = toggleBtn.cloneNode(true);
-        toggleBtn.parentNode.replaceChild(newToggleBtn, toggleBtn);
-        
-        // Add fresh event listener
-        newToggleBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          datePicker.toggle();
-        });
-      }
-
-      // Store the new picker instance on the element
-      element._datePicker = datePicker;
+    if (!element) {
+      return;
     }
+
+    if (element._datePicker) {
+      element._datePicker.dispose();
+    }
+
+    element.value = '';
+    element._storedDate = null;
+
+    setupDatePickerForElement(element);
   });
 }
+
 // --- Clear All Error Messages ---
 function clearAllErrors() {
   const errorDivs = document.querySelectorAll(".invalid-feedback")
